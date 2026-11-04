@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>InvestLab - Interactive Financial Education</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                        display: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                    },
+                    colors: {
+                        apple: {
+                            blue: '#007AFF',
+                            green: '#34C759',
+                            red: '#FF3B30',
+                            orange: '#FF9500',
+                            purple: '#AF52DE',
+                            gray: '#8E8E93',
+                            gray2: '#AEAEB2',
+                            gray3: '#C7C7CC',
+                            gray4: '#D1D1D6',
+                            gray5: '#E5E5EA',
+                            gray6: '#F2F2F7'
+                        }
+                    },
+                    boxShadow: {
+                        'glass-sm': '0 4px 16px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.9)',
+                        'glass': '0 12px 40px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9)',
+                        'glass-lg': '0 24px 64px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,1)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Base Liquid Glass Background */
+        body {
+            background-color: #F5F5F9;
+            color: #1D1D1F;
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(200, 230, 255, 0.45) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(255, 230, 240, 0.45) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(230, 255, 240, 0.45) 0%, transparent 50%);
+            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Apple Liquid Glass Cards */
+        .apple-glass-card {
+            background-color: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-radius: 2rem;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,0.95);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .apple-glass-card:hover {
+            box-shadow: 0 16px 50px rgba(0,0,0,0.07), inset 0 1px 1px rgba(255,255,255,1);
+        }
+
+        /* Apple-style Inputs with Glass effect */
+        .apple-glass-input {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0,0,0,0.1);
+            color: #1D1D1F;
+            border-radius: 1.25rem;
+            font-size: 17px;
+            font-weight: 500;
+            transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02), 0 2px 8px rgba(0,0,0,0.01);
+        }
+        
+        .apple-glass-input:focus {
+            background-color: rgba(255, 255, 255, 0.98);
+            border-color: #007AFF;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15), inset 0 1px 2px rgba(0,0,0,0.01);
+            transform: scale(1.01);
+        }
+
+        /* Premium iOS Sliders */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+            width: 100%;
+        }
+        
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.1);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 28px;
+            width: 28px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.12);
+            cursor: pointer;
+            margin-top: -10px;
+            border: 0.5px solid rgba(0,0,0,0.08);
+            transition: transform 0.1s ease;
+        }
+
+        input[type=range]::-webkit-slider-thumb:active {
+            transform: scale(1.15);
+        }
+        
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        /* Floating Navigation Pill */
+        .nav-pill {
+            background-color: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.06), inset 0 1px 1px rgba(255,255,255,0.95);
+            border-radius: 3rem;
+        }
+
+        .nav-link {
+            color: #515154;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+        }
+        
+        .nav-link:hover {
+            color: #1D1D1F;
+            background-color: rgba(0,0,0,0.04);
+        }
+        
+        .nav-link.active {
+            color: #1D1D1F;
+            font-weight: 700;
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,1);
+        }
+
+        /* Smooth Section Transitions */
+        .section {
+            animation: appFadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        
+        @keyframes appFadeIn {
+            from { opacity: 0; transform: translateY(12px) scale(0.998); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Pill Buttons */
+        .apple-pill-btn {
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .apple-pill-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(100, 100, 105, 0.35);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 100, 105, 0.55);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Disclaimer Banner (Fixed Top) -->
+    <div class="fixed top-0 inset-x-0 z-[100] bg-white/80 backdrop-blur-md border-b border-white/60 text-gray-700 text-[11px] font-semibold py-1.5 px-4 text-center shadow-xs">
+        Educational Simulation Tool • All figures rely on hypothetical return assumptions. Not financial advice.
+    </div>
+
+    <!-- Floating Navigation -->
+    <header class="fixed top-9 inset-x-4 md:top-10 md:w-max md:inset-x-auto md:left-1/2 md:-translate-x-1/2 z-50 transition-all duration-500">
+        <div class="nav-pill px-2 py-2 flex items-center justify-between gap-2 md:gap-3 max-w-full">
+            <!-- Logo -->
+            <div class="flex items-center gap-2.5 cursor-pointer pl-3 pr-2 py-1 apple-pill-btn" onclick="showSection('simulator')">
+                <div class="w-8 h-8 rounded-[0.7rem] bg-gradient-to-br from-gray-800 to-black flex items-center justify-center shadow-md">
+                    <svg class="w-4 h-4 text-white font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg>
+                </div>
+                <span class="font-display font-semibold text-[17px] tracking-tight text-gray-900 hidden sm:block">InvestLab</span>
+            </div>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex items-center gap-1">
+                <button onclick="showSection('simulator')" id="nav-simulator" class="nav-link text-[14px] active">Simulator</button>
+                <button onclick="showSection('scenarios')" id="nav-scenarios" class="nav-link text-[14px]">Scenarios</button>
+                <button onclick="showSection('compare')" id="nav-compare" class="nav-link text-[14px]">Compare</button>
+                <button onclick="showSection('challenges')" id="nav-challenges" class="nav-link text-[14px]">Challenge</button>
+                <button onclick="showSection('basics')" id="nav-basics" class="nav-link text-[14px]">Learn</button>
+                <button onclick="showSection('tutorials')" id="nav-tutorials" class="nav-link text-[14px]">Tutorials</button>
+            </nav>
+
+            <!-- Mobile Menu Toggle -->
+            <div class="md:hidden pr-2">
+                <button onclick="toggleMobileMenu()" type="button" class="text-gray-800 p-2 apple-pill-btn bg-black/5 rounded-full" aria-label="Open Mobile Menu">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Floating Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden mt-3 rounded-3xl bg-white/95 backdrop-blur-3xl border border-white p-3 space-y-1 shadow-[0_16px_40px_rgba(0,0,0,0.14)] w-full relative">
+            <button onclick="showSection('simulator'); toggleMobileMenu()" class="block w-full text-left px-4 py-3 rounded-2xl text-[15px] font-semibold text-gray-800 hover:bg-white active:scale-[0.98] transition-all">Portfolio Simulator</button>
+            <button onclick="showSection('scenarios'); toggleMobileMenu()" class="block w-full text-left px-4 py-3 rounded-2xl text-[15px] font-semibold text-gray-800 hover:bg-white active:scale-[0.98] transition-all">Market Scenarios & Risk Quiz</button>
+            <button onclick="showSection('compare'); toggleMobileMenu()" class="block w-full text-left px-4 py-3 rounded-2xl text-[15px] font-semibold text-gray-800 hover:bg-white active:scale-[0.98] transition-all">Compare Strategies</button>
+            <button onclick="showSection('challenges'); toggleMobileMenu()" class="block w-full text-left px-4 py-3 rounded-2xl text-[15px] font-semibold text-gray-800 hover:bg-white active:scale-[0.98] transition-all">Millionaire Challenge</button>
+            <button onclick="showSection('basics'); toggleMobileMenu()" class="block w-full text-left px-4 py-3 rounded-2xl text-[15px] font-semibold text-gray-800 hover:bg-white active:scale-[0.98] transition-all">Learn the Basics</button>
+            <button onclick="showSection('tutorials'); toggleMobileMenu()" class="block w-full text-left px-4 py-3 rounded-2xl text-[15px] font-semibold text-gray-800 hover:bg-white active:scale-[0.98] transition-all">Interactive Tutorials</button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-36 pb-12 sm:pt-40 sm:pb-20">
+
+        <!-- ================= 1. SIMULATOR SECTION ================= -->
+        <div id="simulator" class="section space-y-10">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-4">
+                <div class="max-w-3xl">
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-display font-semibold tracking-tighter text-black/90">Portfolio Simulator</h1>
+                    <p class="text-gray-600 text-[17px] mt-4 leading-relaxed font-medium">Design a hypothetical multi-asset investment portfolio and project long-term compound growth over time.</p>
+                </div>
+                <div class="flex items-center gap-3 bg-white/70 p-2 rounded-full backdrop-blur-xl border border-white/90 shadow-glass-sm">
+                    <button id="auto-balance-btn" onclick="autoBalanceAllocations()" class="hidden text-[13px] font-bold text-apple-blue px-3 py-1 rounded-full hover:bg-blue-50 transition-colors">Auto-Balance</button>
+                    <div id="alloc-badge" class="px-4 py-2 rounded-full text-[13px] font-bold bg-white text-gray-800 shadow-sm border border-black/5">
+                        100% Allocated
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
+                <!-- Left Column: Controls & Allocations -->
+                <div class="lg:col-span-4 space-y-8">
+                    <!-- Core Investment Settings -->
+                    <div class="apple-glass-card p-7 sm:p-8">
+                        <h2 class="text-[19px] font-bold tracking-tight text-gray-900 mb-6">Investment Inputs</h2>
+                        <div class="space-y-6">
+                            <div>
+                                <label for="sim-initial" class="block text-[12px] font-bold uppercase tracking-wider text-gray-500 mb-2">Starting Capital</label>
+                                <div class="relative">
+                                    <span class="absolute left-4 top-3.5 text-gray-500 font-semibold">$</span>
+                                    <input type="number" id="sim-initial" class="apple-glass-input w-full pl-8 pr-4 py-3" value="1000" min="0" step="100" oninput="updateSimulator()">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="sim-monthly" class="block text-[12px] font-bold uppercase tracking-wider text-gray-500 mb-2">Monthly Deposit</label>
+                                <div class="relative">
+                                    <span class="absolute left-4 top-3.5 text-gray-500 font-semibold">$</span>
+                                    <input type="number" id="sim-monthly" class="apple-glass-input w-full pl-8 pr-4 py-3" value="100" min="0" step="25" oninput="updateSimulator()">
+                                </div>
+                            </div>
+                            <div class="pt-2">
+                                <div class="flex justify-between items-center mb-3">
+                                    <label for="sim-years" class="text-[12px] font-bold uppercase tracking-wider text-gray-500">Timeline</label>
+                                    <span class="text-[15px] font-bold text-apple-blue bg-blue-50 px-3 py-1 rounded-full shadow-xs" id="sim-years-val">30 Years</span>
+                                </div>
+                                <input type="range" id="sim-years" class="w-full accent-apple-blue" value="30" min="1" max="50" oninput="updateSimulator()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Asset Allocation Sliders -->
+                    <div class="apple-glass-card p-7 sm:p-8">
+                        <div class="flex justify-between items-center mb-8">
+                            <h2 class="text-[19px] font-bold tracking-tight text-gray-900">Asset Allocation</h2>
+                            <button onclick="resetAllocations()" class="text-[13px] font-bold text-apple-blue bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-full transition-colors">Reset</button>
+                        </div>
+                        
+                        <div class="space-y-7">
+                            <!-- S&P 500 -->
+                            <div>
+                                <div class="flex justify-between text-[15px] mb-2 font-medium">
+                                    <span class="text-gray-800">S&P 500 <span class="text-gray-500 ml-1 font-normal">10.0%</span></span>
+                                    <span class="font-bold text-gray-900" id="alloc-sp500-val">60%</span>
+                                </div>
+                                <input type="range" id="alloc-sp500" class="w-full accent-apple-green" value="60" min="0" max="100" oninput="updateAllocations('sp500')">
+                            </div>
+                            <!-- Total US Stock -->
+                            <div>
+                                <div class="flex justify-between text-[15px] mb-2 font-medium">
+                                    <span class="text-gray-800">US Total Market <span class="text-gray-500 ml-1 font-normal">9.8%</span></span>
+                                    <span class="font-bold text-gray-900" id="alloc-us-val">20%</span>
+                                </div>
+                                <input type="range" id="alloc-us" class="w-full accent-apple-blue" value="20" min="0" max="100" oninput="updateAllocations('us')">
+                            </div>
+                            <!-- International Stock -->
+                            <div>
+                                <div class="flex justify-between text-[15px] mb-2 font-medium">
+                                    <span class="text-gray-800">International <span class="text-gray-500 ml-1 font-normal">7.5%</span></span>
+                                    <span class="font-bold text-gray-900" id="alloc-intl-val">10%</span>
+                                </div>
+                                <input type="range" id="alloc-intl" class="w-full accent-apple-purple" value="10" min="0" max="100" oninput="updateAllocations('intl')">
+                            </div>
+                            <!-- Bond Fund -->
+                            <div>
+                                <div class="flex justify-between text-[15px] mb-2 font-medium">
+                                    <span class="text-gray-800">Bond Fund <span class="text-gray-500 ml-1 font-normal">4.5%</span></span>
+                                    <span class="font-bold text-gray-900" id="alloc-bond-val">10%</span>
+                                </div>
+                                <input type="range" id="alloc-bond" class="w-full accent-apple-orange" value="10" min="0" max="100" oninput="updateAllocations('bond')">
+                            </div>
+                            <!-- Cash/Savings -->
+                            <div>
+                                <div class="flex justify-between text-[15px] mb-2 font-medium">
+                                    <span class="text-gray-800">Cash / Savings <span class="text-gray-500 ml-1 font-normal">2.5%</span></span>
+                                    <span class="font-bold text-gray-900" id="alloc-savings-val">0%</span>
+                                </div>
+                                <input type="range" id="alloc-savings" class="w-full accent-gray-500" value="0" min="0" max="100" oninput="updateAllocations('savings')">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Results & Interactive Chart -->
+                <div class="lg:col-span-8 space-y-8">
+                    <!-- Stat Summary Cards -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div class="apple-glass-card p-6 flex flex-col justify-center">
+                            <span class="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-1">Final Balance</span>
+                            <span class="text-3xl font-display font-bold text-black/90 tracking-tight" id="sim-res-final">$0</span>
+                        </div>
+                        <div class="apple-glass-card p-6 flex flex-col justify-center">
+                            <span class="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-1">Total Deposits</span>
+                            <span class="text-3xl font-display font-semibold text-gray-600 tracking-tight" id="sim-res-cont">$0</span>
+                        </div>
+                        <div class="apple-glass-card p-6 flex flex-col justify-center relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-br from-green-50/50 to-transparent"></div>
+                            <div class="relative z-10">
+                                <span class="text-[11px] font-bold uppercase tracking-widest text-apple-green/90 mb-1">Investment Gains</span>
+                                <span class="text-3xl font-display font-bold text-apple-green tracking-tight" id="sim-res-gains">$0</span>
+                            </div>
+                        </div>
+                        <div class="apple-glass-card p-6 flex flex-col justify-center relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent"></div>
+                            <div class="relative z-10">
+                                <span class="text-[11px] font-bold uppercase tracking-widest text-apple-blue/90 mb-1">Assumed Return</span>
+                                <span class="text-3xl font-display font-bold text-apple-blue tracking-tight" id="sim-res-return">0.0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Container -->
+                    <div class="apple-glass-card p-8">
+                        <div class="flex items-center justify-between mb-8">
+                            <h3 class="font-bold text-gray-900 text-[19px] tracking-tight">Growth Trajectory</h3>
+                        </div>
+                        <div class="relative h-[360px] w-full">
+                            <canvas id="simulatorChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Tax Comparison Card -->
+                    <div class="apple-glass-card p-8 bg-gradient-to-br from-white/90 to-purple-50/40 relative overflow-hidden">
+                        <div class="absolute -right-16 -top-16 w-64 h-64 bg-purple-200/20 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between mb-8">
+                                <div>
+                                    <h3 class="font-bold text-gray-900 text-[19px] tracking-tight">Tax Impact: Roth IRA vs. Taxable</h3>
+                                    <p class="text-[13px] text-gray-500 mt-1 font-medium">See how tax-free growth accelerates your actual take-home wealth.</p>
+                                </div>
+                                <span class="hidden sm:inline-block text-[12px] font-bold text-apple-purple bg-purple-100 px-3 py-1 rounded-full shadow-sm">Tax Advantage</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                <!-- Roth IRA -->
+                                <div class="bg-white/60 p-5 rounded-2xl border border-black/5 shadow-sm">
+                                    <span class="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-1 block">Roth IRA Take-Home</span>
+                                    <span class="text-2xl lg:text-3xl font-display font-bold text-apple-green tracking-tight" id="tax-roth-val">$0</span>
+                                    <span class="text-[11.5px] font-medium text-gray-500 block mt-1">100% Tax-free withdrawals</span>
+                                </div>
+                                <!-- Taxable Brokerage -->
+                                <div class="bg-white/60 p-5 rounded-2xl border border-black/5 shadow-sm">
+                                    <span class="text-[11px] font-bold uppercase tracking-widest text-gray-500 mb-1 block">Taxable Brokerage</span>
+                                    <span class="text-2xl lg:text-3xl font-display font-bold text-gray-900 tracking-tight" id="tax-brokerage-val">$0</span>
+                                    <span class="text-[11.5px] font-medium text-gray-500 block mt-1">After capital gains tax</span>
+                                </div>
+                                <!-- Taxes Saved -->
+                                <div class="bg-purple-50/80 p-5 rounded-2xl border border-purple-100 shadow-sm">
+                                    <span class="text-[11px] font-bold uppercase tracking-widest text-apple-purple mb-1 block">Taxes Saved</span>
+                                    <span class="text-2xl lg:text-3xl font-display font-bold text-apple-purple tracking-tight" id="tax-saved-val">$0</span>
+                                    <span class="text-[11.5px] font-medium text-apple-purple/70 block mt-1">Kept in your pocket</span>
+                                </div>
+                            </div>
+
+                            <!-- Capital Gains Slider -->
+                            <div class="pt-2">
+                                <div class="flex justify-between items-center mb-3">
+                                    <label for="tax-cgt-rate" class="text-[12px] font-bold uppercase tracking-wider text-gray-500">Long-Term Capital Gains Tax Rate</label>
+                                    <span class="text-[14px] font-bold text-gray-900 bg-white px-3 py-1 rounded-full shadow-sm border border-black/5" id="tax-cgt-val">15%</span>
+                                </div>
+                                <input type="range" id="tax-cgt-rate" class="w-full accent-apple-purple" value="15" min="0" max="35" step="1" oninput="updateTaxComparison()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 2. MARKET SCENARIOS SECTION ================= -->
+        <div id="scenarios" class="section hidden space-y-10">
+            <div class="pb-4">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-display font-semibold tracking-tighter text-black/90">Stress Tests & Decision Profile</h1>
+                <p class="text-gray-600 text-[17px] mt-4 max-w-3xl leading-relaxed font-medium">Observe the mathematical difference between staying invested and panic-selling during major shocks, or evaluate your psychological risk profile.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
+                <!-- Controls Column -->
+                <div class="lg:col-span-4 space-y-8">
+                    <div class="apple-glass-card p-7 sm:p-8">
+                        <h2 class="text-[19px] font-bold tracking-tight text-gray-900 mb-6">Market Environment</h2>
+                        <div class="space-y-3">
+                            <button onclick="selectScenario('normal')" id="scen-btn-normal" class="w-full text-left p-5 rounded-2xl border border-black/5 bg-white shadow-glass-sm transition-all flex items-center justify-between apple-pill-btn">
+                                <span class="font-bold text-[16px] text-gray-900">Normal Growth</span>
+                                <span class="text-[13px] text-apple-green bg-green-50 px-3 py-1 rounded-full font-bold">+8.5%</span>
+                            </button>
+                            <button onclick="selectScenario('decline20')" id="scen-btn-decline20" class="w-full text-left p-5 rounded-2xl border border-transparent bg-white/50 hover:bg-white/80 transition-all flex items-center justify-between apple-pill-btn">
+                                <span class="font-medium text-[16px] text-gray-700">20% Correction</span>
+                                <span class="text-[13px] text-apple-orange font-bold">-20%</span>
+                            </button>
+                            <button onclick="selectScenario('crash35')" id="scen-btn-crash35" class="w-full text-left p-5 rounded-2xl border border-transparent bg-white/50 hover:bg-white/80 transition-all flex items-center justify-between apple-pill-btn">
+                                <span class="font-medium text-[16px] text-gray-700">35% Crash</span>
+                                <span class="text-[13px] text-apple-red font-bold">-35%</span>
+                            </button>
+                            <button onclick="selectScenario('lostDecade')" id="scen-btn-lostDecade" class="w-full text-left p-5 rounded-2xl border border-transparent bg-white/50 hover:bg-white/80 transition-all flex items-center justify-between apple-pill-btn">
+                                <span class="font-medium text-[16px] text-gray-700">Flat Market</span>
+                                <span class="text-[13px] text-gray-600 font-bold">10-Yr</span>
+                            </button>
+                            <button onclick="selectScenario('recovery')" id="scen-btn-recovery" class="w-full text-left p-5 rounded-2xl border border-transparent bg-white/50 hover:bg-white/80 transition-all flex items-center justify-between apple-pill-btn">
+                                <span class="font-medium text-[16px] text-gray-700">V-Shape Recovery</span>
+                                <span class="text-[13px] text-apple-purple font-bold">Surge</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="apple-glass-card p-7 sm:p-8 space-y-6">
+                        <div>
+                            <label for="scen-initial" class="block text-[12px] font-bold uppercase tracking-wider text-gray-500 mb-2">Initial Value</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3.5 text-gray-500 font-semibold">$</span>
+                                <input type="number" id="scen-initial" class="apple-glass-input w-full pl-8 pr-4 py-3" value="10000" min="1000" step="1000" oninput="updateScenario()">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="scen-monthly" class="block text-[12px] font-bold uppercase tracking-wider text-gray-500 mb-2">Monthly Contribution</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3.5 text-gray-500 font-semibold">$</span>
+                                <input type="number" id="scen-monthly" class="apple-glass-input w-full pl-8 pr-4 py-3" value="250" min="0" step="50" oninput="updateScenario()">
+                            </div>
+                        </div>
+                        <input type="hidden" id="scen-years" value="25">
+                    </div>
+                </div>
+
+                <!-- Display Column -->
+                <div class="lg:col-span-8 space-y-8">
+                    <!-- Scenario Impact Banner -->
+                    <div class="apple-glass-card p-8 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center relative overflow-hidden">
+                        <div class="relative z-10">
+                            <span id="scen-lbl-1" class="text-[11px] font-bold uppercase tracking-widest text-gray-500 block mb-2">Pre-Shock Peak</span>
+                            <div class="text-3xl font-display font-semibold text-gray-900 tracking-tight" id="scen-val-before">$0</div>
+                        </div>
+                        <div class="relative z-10 border-t sm:border-t-0 sm:border-l border-black/5 pt-6 sm:pt-0">
+                            <span id="scen-lbl-2" class="text-[11px] font-bold uppercase tracking-widest text-gray-500 block mb-2">Post-Shock Trough</span>
+                            <div class="text-3xl font-display font-bold text-apple-red tracking-tight" id="scen-val-after">$0</div>
+                        </div>
+                        <div class="relative z-10 border-t sm:border-t-0 sm:border-l border-black/5 pt-6 sm:pt-0">
+                            <span class="text-[11px] font-bold uppercase tracking-widest text-apple-green/90 block mb-2">End Balance (Stayed)</span>
+                            <div class="text-3xl font-display font-bold text-apple-green tracking-tight" id="scen-val-final">$0</div>
+                        </div>
+                    </div>
+
+                    <!-- Chart -->
+                    <div class="apple-glass-card p-8">
+                        <div class="flex items-center justify-between mb-8">
+                            <h3 class="font-bold text-gray-900 text-[19px] tracking-tight">Staying Invested vs. Panic Selling</h3>
+                        </div>
+                        <div class="relative h-[380px] w-full">
+                            <canvas id="scenarioChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Behavioral Risk Decision Quiz -->
+            <div class="apple-glass-card p-8 sm:p-10 mt-10">
+                <div class="max-w-3xl mb-8">
+                    <span class="text-[12px] font-bold uppercase tracking-widest text-apple-purple bg-purple-50 px-3 py-1 rounded-full mb-3 inline-block">Behavioral Assessment</span>
+                    <h2 class="text-3xl font-display font-bold text-gray-900 tracking-tight">Investor Risk Decision Profile</h2>
+                    <p class="text-gray-600 text-[15px] mt-2 font-medium">Answer 3 brief questions to determine your behavioral risk tolerance and get an optimal portfolio recommendation.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="risk-quiz-questions">
+                    <!-- Q1 -->
+                    <div class="bg-white/80 p-6 rounded-2xl border border-black/5 shadow-xs flex flex-col justify-between">
+                        <div>
+                            <span class="text-[11px] font-bold uppercase text-gray-500 tracking-wider">Question 1</span>
+                            <h4 class="font-bold text-[15px] text-gray-900 mt-1 mb-4">What is your primary investment timeframe?</h4>
+                        </div>
+                        <select id="quiz-q1" class="apple-glass-input w-full p-3 text-[14px]" onchange="calcRiskProfile()">
+                            <option value="1">Under 5 Years (Short-term)</option>
+                            <option value="2">5 to 15 Years (Medium-term)</option>
+                            <option value="3" selected>Over 15 Years (Long-term growth)</option>
+                        </select>
+                    </div>
+
+                    <!-- Q2 -->
+                    <div class="bg-white/80 p-6 rounded-2xl border border-black/5 shadow-xs flex flex-col justify-between">
+                        <div>
+                            <span class="text-[11px] font-bold uppercase text-gray-500 tracking-wider">Question 2</span>
+                            <h4 class="font-bold text-[15px] text-gray-900 mt-1 mb-4">How do you react if your portfolio drops 20% in a month?</h4>
+                        </div>
+                        <select id="quiz-q2" class="apple-glass-input w-full p-3 text-[14px]" onchange="calcRiskProfile()">
+                            <option value="1">Sell everything to cash immediately</option>
+                            <option value="2">Sell a portion to reduce panic</option>
+                            <option value="3" selected>Hold and stay the course</option>
+                            <option value="4">Buy more shares at discounted prices</option>
+                        </select>
+                    </div>
+
+                    <!-- Q3 -->
+                    <div class="bg-white/80 p-6 rounded-2xl border border-black/5 shadow-xs flex flex-col justify-between">
+                        <div>
+                            <span class="text-[11px] font-bold uppercase text-gray-500 tracking-wider">Question 3</span>
+                            <h4 class="font-bold text-[15px] text-gray-900 mt-1 mb-4">Which matters more to you?</h4>
+                        </div>
+                        <select id="quiz-q3" class="apple-glass-input w-full p-3 text-[14px]" onchange="calcRiskProfile()">
+                            <option value="1">Avoiding any loss of capital</option>
+                            <option value="2" selected>Balanced mix of growth and safety</option>
+                            <option value="3">Maximizing long-term net worth</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Quiz Output Banner -->
+                <div class="mt-8 bg-gradient-to-r from-blue-50/80 to-purple-50/80 p-6 rounded-2xl border border-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <span class="text-[12px] font-bold uppercase tracking-wider text-gray-500">Your Calculated Profile</span>
+                        <h3 class="text-2xl font-bold text-gray-900" id="quiz-profile-title">Growth Investor</h3>
+                        <p class="text-[14px] text-gray-600 font-medium" id="quiz-profile-desc">Recommended Allocation: 80% Equities / 20% Fixed Income.</p>
+                    </div>
+                    <button onclick="applyQuizAllocation()" class="px-6 py-3 bg-apple-blue text-white text-[14px] font-bold rounded-full hover:bg-blue-600 transition-all shadow-md apple-pill-btn whitespace-nowrap">
+                        Apply Profile to Simulator
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 3. COMPARE STRATEGIES SECTION ================= -->
+        <div id="compare" class="section hidden space-y-10">
+            <div class="pb-4">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-display font-semibold tracking-tighter text-black/90">Compare Strategies</h1>
+                <p class="text-gray-600 text-[17px] mt-4 max-w-2xl leading-relaxed font-medium">Evaluate distinct approaches side-by-side to understand the impacts of cash drag, diversification, and time.</p>
+            </div>
+
+            <!-- Parameters Grid -->
+            <div class="apple-glass-card p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div>
+                    <label for="comp-initial" class="block text-[12px] font-bold uppercase tracking-wider text-gray-500 mb-2">Starting Cash</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3.5 text-gray-500 font-semibold">$</span>
+                        <input type="number" id="comp-initial" class="apple-glass-input w-full pl-8 pr-4 py-3" value="5000" min="0" step="500" oninput="updateCompare()">
+                    </div>
+                </div>
+                <div>
+                    <label for="comp-monthly" class="block text-[12px] font-bold uppercase tracking-wider text-gray-500 mb-2">Monthly Deposit</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3.5 text-gray-500 font-semibold">$</span>
+                        <input type="number" id="comp-monthly" class="apple-glass-input w-full pl-8 pr-4 py-3" value="200" min="0" step="50" oninput="updateCompare()">
+                    </div>
+                </div>
+                <div>
+                    <label for="comp-years" class="block text-[12px] font-bold uppercase tracking-wider text-gray-500 mb-2">Time (Years)</label>
+                    <input type="number" id="comp-years" class="apple-glass-input w-full px-4 py-3" value="30" min="5" max="50" oninput="updateCompare()">
+                </div>
+                <div>
+                    <label for="comp-inflation" class="block text-[12px] font-bold uppercase tracking-wider text-gray-500 mb-2">Inflation Rate (%)</label>
+                    <input type="number" id="comp-inflation" class="apple-glass-input w-full px-4 py-3" value="2.5" min="0" max="10" step="0.5" oninput="updateCompare()">
+                </div>
+            </div>
+
+            <!-- Strategy Results Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Strategy 1: Cash Savings -->
+                <div class="apple-glass-card p-6 flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-orange-50/50 to-transparent"></div>
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="font-bold text-[17px] text-gray-900 tracking-tight">Savings</span>
+                            <span class="text-[12px] font-bold text-apple-orange bg-orange-100 px-3 py-1 rounded-full shadow-sm">2.5%</span>
+                        </div>
+                    </div>
+                    <div class="relative z-10 space-y-3 mt-4">
+                        <div class="flex justify-between items-baseline border-b border-black/5 pb-2"><span class="text-[13px] font-semibold text-gray-600">Nominal:</span> <span class="text-xl font-bold text-gray-900" id="comp-s1-final">$0</span></div>
+                        <div class="flex justify-between items-baseline"><span class="text-[13px] font-medium text-gray-500">Inflation Adj:</span> <span class="font-bold text-gray-700" id="comp-s1-adj">$0</span></div>
+                    </div>
+                </div>
+
+                <!-- Strategy 2: Mixed Portfolio (60/40) -->
+                <div class="apple-glass-card p-6 flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-blue-50/50 to-transparent"></div>
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="font-bold text-[17px] text-gray-900 tracking-tight">Balanced 60/40</span>
+                            <span class="text-[12px] font-bold text-apple-blue bg-blue-100 px-3 py-1 rounded-full shadow-sm">7.7%</span>
+                        </div>
+                    </div>
+                    <div class="relative z-10 space-y-3 mt-4">
+                        <div class="flex justify-between items-baseline border-b border-black/5 pb-2"><span class="text-[13px] font-semibold text-gray-600">Nominal:</span> <span class="text-xl font-bold text-gray-900" id="comp-s2-final">$0</span></div>
+                        <div class="flex justify-between items-baseline"><span class="text-[13px] font-medium text-gray-500">Inflation Adj:</span> <span class="font-bold text-gray-700" id="comp-s2-adj">$0</span></div>
+                    </div>
+                </div>
+
+                <!-- Strategy 3: All-Stock Monthly (DCA) -->
+                <div class="apple-glass-card p-6 flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-green-50/50 to-transparent"></div>
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="font-bold text-[17px] text-gray-900 tracking-tight">Stock Monthly</span>
+                            <span class="text-[12px] font-bold text-apple-green bg-green-100 px-3 py-1 rounded-full shadow-sm">9.8%</span>
+                        </div>
+                    </div>
+                    <div class="relative z-10 space-y-3 mt-4">
+                        <div class="flex justify-between items-baseline border-b border-black/5 pb-2"><span class="text-[13px] font-semibold text-gray-600">Nominal:</span> <span class="text-xl font-bold text-gray-900" id="comp-s3-final">$0</span></div>
+                        <div class="flex justify-between items-baseline"><span class="text-[13px] font-medium text-gray-500">Inflation Adj:</span> <span class="font-bold text-gray-700" id="comp-s3-adj">$0</span></div>
+                    </div>
+                </div>
+
+                <!-- Strategy 4: All-Stock Lump Sum -->
+                <div class="apple-glass-card p-6 flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-purple-50/50 to-transparent"></div>
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-[17px] text-gray-900 tracking-tight">Stock Upfront</span>
+                            <span class="text-[12px] font-bold text-apple-purple bg-purple-100 px-3 py-1 rounded-full shadow-sm">9.8%</span>
+                        </div>
+                        <span class="text-[11px] font-medium text-gray-600 block leading-tight" id="comp-lump-desc">Invests total lifetime principal on Day 1</span>
+                    </div>
+                    <div class="relative z-10 space-y-3 mt-4">
+                        <div class="flex justify-between items-baseline border-b border-black/5 pb-2"><span class="text-[13px] font-semibold text-gray-600">Nominal:</span> <span class="text-xl font-bold text-gray-900" id="comp-s4-final">$0</span></div>
+                        <div class="flex justify-between items-baseline"><span class="text-[13px] font-medium text-gray-500">Inflation Adj:</span> <span class="font-bold text-gray-700" id="comp-s4-adj">$0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Strategy Comparison Chart -->
+            <div class="apple-glass-card p-8">
+                <div class="relative h-[420px] w-full">
+                    <canvas id="compareChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 4. MILLIONAIRE CHALLENGE SECTION ================= -->
+        <div id="challenges" class="section hidden space-y-10">
+            <div class="pb-4">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-display font-semibold tracking-tighter text-black/90">The Millionaire Challenge</h1>
+                <p class="text-gray-600 text-[17px] mt-4 max-w-2xl leading-relaxed font-medium">Discover how early action drastically reduces the effort required to accumulate significant wealth.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
+                <!-- Controls & Presets -->
+                <div class="lg:col-span-5 space-y-8">
+                    <div class="apple-glass-card p-7 sm:p-8">
+                        <h2 class="text-[19px] font-bold tracking-tight text-gray-900 mb-6">Start Age Presets</h2>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="setChallengePreset(18)" id="chal-preset-18" class="chal-preset-btn px-4 py-4 text-[15px] font-semibold bg-white border border-black/5 hover:bg-gray-50 rounded-2xl text-gray-700 transition-all shadow-sm apple-pill-btn">Age 18 <span class="block text-[11px] font-normal text-gray-500 mt-0.5">47 yrs to grow</span></button>
+                            <button onclick="setChallengePreset(25)" id="chal-preset-25" class="chal-preset-btn px-4 py-4 text-[15px] font-semibold bg-white border border-black/5 hover:bg-gray-50 rounded-2xl text-gray-700 transition-all shadow-sm apple-pill-btn">Age 25 <span class="block text-[11px] font-normal text-gray-500 mt-0.5">40 yrs to grow</span></button>
+                            <button onclick="setChallengePreset(35)" id="chal-preset-35" class="chal-preset-btn px-4 py-4 text-[15px] font-semibold bg-white border border-black/5 hover:bg-gray-50 rounded-2xl text-gray-700 transition-all shadow-sm apple-pill-btn">Age 35 <span class="block text-[11px] font-normal text-gray-500 mt-0.5">30 yrs to grow</span></button>
+                            <button onclick="setChallengePreset(45)" id="chal-preset-45" class="chal-preset-btn px-4 py-4 text-[15px] font-semibold bg-white border border-black/5 hover:bg-gray-50 rounded-2xl text-gray-700 transition-all shadow-sm apple-pill-btn">Age 45 <span class="block text-[11px] font-normal text-gray-500 mt-0.5">20 yrs to grow</span></button>
+                        </div>
+                    </div>
+
+                    <div class="apple-glass-card p-7 sm:p-8 space-y-6">
+                        <h2 class="text-[19px] font-bold tracking-tight text-gray-900 mb-2">Custom Simulator</h2>
+                        <div>
+                            <label for="chal-initial" class="block text-[12px] font-bold uppercase tracking-wider text-gray-500 mb-2">Starting Capital</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3.5 text-gray-500 font-semibold">$</span>
+                                <input type="number" id="chal-initial" class="apple-glass-input w-full pl-8 pr-4 py-3" value="1000" min="0" step="500" oninput="updateChallenge()">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="chal-monthly" class="block text-[12px] font-bold uppercase tracking-wider text-gray-500 mb-2">Monthly Contribution</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3.5 text-gray-500 font-semibold">$</span>
+                                <input type="number" id="chal-monthly" class="apple-glass-input w-full pl-8 pr-4 py-3" value="300" min="0" step="50" oninput="updateChallenge()">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="chal-return" class="block text-[12px] font-bold uppercase tracking-wider text-gray-500 mb-2">Assumed Return (%)</label>
+                            <input type="number" id="chal-return" class="apple-glass-input w-full px-4 py-3" value="9.0" min="1" max="15" step="0.5" oninput="updateChallenge()">
+                        </div>
+                        <div class="pt-3">
+                            <div class="flex justify-between items-center mb-3">
+                                <label for="chal-years" class="text-[12px] font-bold uppercase tracking-wider text-gray-500">Target Horizon</label>
+                                <span class="text-[15px] font-bold text-gray-900" id="chal-years-val">40 Years</span>
+                            </div>
+                            <input type="range" id="chal-years" class="w-full accent-apple-blue" value="40" min="5" max="60" oninput="updateChallenge(); document.getElementById('chal-years-val').innerText = this.value + ' Years'">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Display & Progress Bar -->
+                <div class="lg:col-span-7 space-y-8">
+                    <div class="apple-glass-card p-10 sm:p-16 text-center flex flex-col items-center justify-center h-full relative overflow-hidden">
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-green-200/30 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+
+                        <span class="text-[13px] font-bold uppercase tracking-widest text-gray-500 mb-4 block">Projected Wealth</span>
+                        <h2 id="chal-final-val" class="text-6xl sm:text-8xl font-display font-bold text-black/90 tracking-tighter mb-12">$0</h2>
+
+                        <!-- Progress Bar Container -->
+                        <div class="w-full max-w-lg mb-8">
+                            <div class="flex justify-between text-[13px] font-bold mb-3">
+                                <span class="text-gray-500">$0</span>
+                                <span class="text-apple-green bg-green-50 px-3 py-1 rounded-full shadow-sm">$1,000,000 Target</span>
+                            </div>
+                            <div class="w-full h-4 bg-gray-200/60 rounded-full overflow-hidden shadow-inner">
+                                <div id="chal-progress" class="h-full bg-gradient-to-r from-green-400 to-apple-green transition-all duration-1000 ease-out rounded-full shadow-[0_0_10px_rgba(52,199,89,0.5)]" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <p id="chal-time-msg" class="text-[17px] text-gray-700 font-semibold bg-white/70 px-6 py-3 rounded-2xl shadow-sm border border-white/90 backdrop-blur-md">
+                            Calculating timeline...
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 5. LEARN THE BASICS (GLOSSARY) ================= -->
+        <div id="basics" class="section hidden space-y-10">
+            <div class="pb-4">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-display font-semibold tracking-tighter text-black/90">Learn the Basics</h1>
+                <p class="text-gray-600 text-[17px] mt-4 max-w-2xl leading-relaxed font-medium">Master core concepts of investing with simple definitions, practical examples, and core takeaways.</p>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="max-w-2xl mx-auto relative z-10 mb-8">
+                <div class="relative shadow-glass rounded-3xl">
+                    <svg class="absolute left-5 top-4 h-6 w-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="glossary-search" onkeyup="filterGlossary()" class="w-full pl-14 pr-6 py-4 bg-white/80 backdrop-blur-3xl border border-white text-gray-900 rounded-3xl font-medium text-[17px] focus:outline-none focus:ring-4 focus:ring-blue-500/20 transition-all placeholder:text-gray-500" placeholder="Search terms (e.g., Inflation, Index Funds, Cash Drag)...">
+                </div>
+            </div>
+
+            <!-- Glossary Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="glossary-grid">
+                <!-- Term 1 -->
+                <div class="apple-glass-card p-8 glossary-term flex flex-col h-full">
+                    <h3 class="text-[22px] font-bold tracking-tight text-gray-900 mb-3">Compound Interest</h3>
+                    <p class="text-[15px] text-gray-700 mb-6 leading-relaxed flex-grow"><strong class="text-gray-900 font-bold">Definition:</strong> Earning interest on your initial investment, and also earning interest on the interest you've already accumulated.</p>
+                    <div class="bg-blue-50/60 border border-blue-100/60 p-5 rounded-2xl mb-4">
+                        <p class="text-[14px] text-gray-800 leading-relaxed"><strong class="text-apple-blue font-bold">Example:</strong> If you invest $100 at 10% interest, you have $110 after year 1. In year 2, you earn 10% on $110, giving you $121, not just $120.</p>
+                    </div>
+                    <p class="text-[14px] text-gray-600 leading-relaxed"><strong class="text-gray-900 font-semibold">Why it matters:</strong> It is the primary engine of long-term wealth creation, allowing money to grow exponentially over time.</p>
+                </div>
+
+                <!-- Term 2 -->
+                <div class="apple-glass-card p-8 glossary-term flex flex-col h-full">
+                    <h3 class="text-[22px] font-bold tracking-tight text-gray-900 mb-3">Index Funds</h3>
+                    <p class="text-[15px] text-gray-700 mb-6 leading-relaxed flex-grow"><strong class="text-gray-900 font-bold">Definition:</strong> A type of mutual fund or ETF that holds all the stocks in a specific market index, aiming to match its performance rather than beat it.</p>
+                    <div class="bg-blue-50/60 border border-blue-100/60 p-5 rounded-2xl mb-4">
+                        <p class="text-[14px] text-gray-800 leading-relaxed"><strong class="text-apple-blue font-bold">Example:</strong> Instead of picking 5 tech stocks, you buy a Total Stock Market Index Fund and instantly own small pieces of thousands of companies.</p>
+                    </div>
+                    <p class="text-[14px] text-gray-600 leading-relaxed"><strong class="text-gray-900 font-semibold">Why it matters:</strong> They offer instant diversification, low fees, and historically outperform most actively managed funds.</p>
+                </div>
+
+                <!-- Term 3 -->
+                <div class="apple-glass-card p-8 glossary-term flex flex-col h-full">
+                    <h3 class="text-[22px] font-bold tracking-tight text-gray-900 mb-3">S&P 500</h3>
+                    <p class="text-[15px] text-gray-700 mb-6 leading-relaxed flex-grow"><strong class="text-gray-900 font-bold">Definition:</strong> A stock market index tracking the performance of 500 of the largest public companies in the United States.</p>
+                    <div class="bg-blue-50/60 border border-blue-100/60 p-5 rounded-2xl mb-4">
+                        <p class="text-[14px] text-gray-800 leading-relaxed"><strong class="text-apple-blue font-bold">Example:</strong> Leading global enterprises like Apple, Microsoft, and Amazon are heavily weighted in the S&P 500.</p>
+                    </div>
+                    <p class="text-[14px] text-gray-600 leading-relaxed"><strong class="text-gray-900 font-semibold">Why it matters:</strong> It is widely considered the primary indicator of large-cap US equities and a standard benchmark for overall market health.</p>
+                </div>
+
+                <!-- Term 4 -->
+                <div class="apple-glass-card p-8 glossary-term flex flex-col h-full">
+                    <h3 class="text-[22px] font-bold tracking-tight text-gray-900 mb-3">Diversification</h3>
+                    <p class="text-[15px] text-gray-700 mb-6 leading-relaxed flex-grow"><strong class="text-gray-900 font-bold">Definition:</strong> Spreading investments across various asset classes to reduce exposure to any single asset or risk.</p>
+                    <div class="bg-blue-50/60 border border-blue-100/60 p-5 rounded-2xl mb-4">
+                        <p class="text-[14px] text-gray-800 leading-relaxed"><strong class="text-apple-blue font-bold">Example:</strong> Holding domestic stocks, international equities, bonds, and cash together rather than betting on one stock.</p>
+                    </div>
+                    <p class="text-[14px] text-gray-600 leading-relaxed"><strong class="text-gray-900 font-semibold">Why it matters:</strong> It minimizes overall portfolio risk, smoothing out short-term market fluctuations.</p>
+                </div>
+
+                <!-- Term 5 -->
+                <div class="apple-glass-card p-8 glossary-term flex flex-col h-full">
+                    <h3 class="text-[22px] font-bold tracking-tight text-gray-900 mb-3">Inflation</h3>
+                    <p class="text-[15px] text-gray-700 mb-6 leading-relaxed flex-grow"><strong class="text-gray-900 font-bold">Definition:</strong> The persistent increase in prices and gradual decline in the purchasing power of money over time.</p>
+                    <div class="bg-blue-50/60 border border-blue-100/60 p-5 rounded-2xl mb-4">
+                        <p class="text-[14px] text-gray-800 leading-relaxed"><strong class="text-apple-blue font-bold">Example:</strong> If inflation is 3%, a basket of goods costing $100 today will cost approximately $103 next year.</p>
+                    </div>
+                    <p class="text-[14px] text-gray-600 leading-relaxed"><strong class="text-gray-900 font-semibold">Why it matters:</strong> Your money must earn a rate higher than inflation to avoid losing real purchasing power.</p>
+                </div>
+
+                <!-- Term 6 -->
+                <div class="apple-glass-card p-8 glossary-term flex flex-col h-full">
+                    <h3 class="text-[22px] font-bold tracking-tight text-gray-900 mb-3">Stocks vs. Bonds</h3>
+                    <p class="text-[15px] text-gray-700 mb-6 leading-relaxed flex-grow"><strong class="text-gray-900 font-bold">Definition:</strong> A stock is partial equity ownership in a firm. A bond is a debt security where you lend capital to a corporate or government entity for interest.</p>
+                    <div class="bg-blue-50/60 border border-blue-100/60 p-5 rounded-2xl mb-4">
+                        <p class="text-[14px] text-gray-800 leading-relaxed"><strong class="text-apple-blue font-bold">Example:</strong> Owning Apple stock makes you a shareholder. Owning a US Treasury bond makes you a lender to the US government.</p>
+                    </div>
+                    <p class="text-[14px] text-gray-600 leading-relaxed"><strong class="text-gray-900 font-semibold">Why it matters:</strong> Stocks offer long-term growth but higher volatility. Bonds deliver stability and regular income at lower growth rates.</p>
+                </div>
+
+                <!-- Term 7 -->
+                <div class="apple-glass-card p-8 glossary-term flex flex-col h-full">
+                    <h3 class="text-[22px] font-bold tracking-tight text-gray-900 mb-3">Risk and Return</h3>
+                    <p class="text-[15px] text-gray-700 mb-6 leading-relaxed flex-grow"><strong class="text-gray-900 font-bold">Definition:</strong> The fundamental rule that higher potential returns generally require accepting greater risk of price fluctuations.</p>
+                    <div class="bg-blue-50/60 border border-blue-100/60 p-5 rounded-2xl mb-4">
+                        <p class="text-[14px] text-gray-800 leading-relaxed"><strong class="text-apple-blue font-bold">Example:</strong> A high-yield savings account offers guaranteed protection with modest yield; equities experience short-term volatility for higher long-term potential.</p>
+                    </div>
+                    <p class="text-[14px] text-gray-600 leading-relaxed"><strong class="text-gray-900 font-semibold">Why it matters:</strong> Understanding risk helps investors build portfolios aligned with their risk tolerance and timeline.</p>
+                </div>
+
+                <!-- Term 8 -->
+                <div class="apple-glass-card p-8 glossary-term flex flex-col h-full">
+                    <h3 class="text-[22px] font-bold tracking-tight text-gray-900 mb-3">Dollar-Cost Averaging (DCA)</h3>
+                    <p class="text-[15px] text-gray-700 mb-6 leading-relaxed flex-grow"><strong class="text-gray-900 font-bold">Definition:</strong> Consistently investing a fixed dollar amount at regular intervals, regardless of market highs or lows.</p>
+                    <div class="bg-blue-50/60 border border-blue-100/60 p-5 rounded-2xl mb-4">
+                        <p class="text-[14px] text-gray-800 leading-relaxed"><strong class="text-apple-blue font-bold">Example:</strong> Automatically contributing $200 from your paycheck on the first business day of every month.</p>
+                    </div>
+                    <p class="text-[14px] text-gray-600 leading-relaxed"><strong class="text-gray-900 font-semibold">Why it matters:</strong> DCA eliminates market timing stress and ensures you purchase more fund shares when prices drop.</p>
+                </div>
+
+                <!-- Term 9 -->
+                <div class="apple-glass-card p-8 glossary-term flex flex-col h-full">
+                    <h3 class="text-[22px] font-bold tracking-tight text-gray-900 mb-3">Expense Ratios</h3>
+                    <p class="text-[15px] text-gray-700 mb-6 leading-relaxed flex-grow"><strong class="text-gray-900 font-bold">Definition:</strong> The annual administrative and management fee deducted by mutual funds or ETFs, expressed as a percentage of total assets.</p>
+                    <div class="bg-blue-50/60 border border-blue-100/60 p-5 rounded-2xl mb-4">
+                        <p class="text-[14px] text-gray-800 leading-relaxed"><strong class="text-apple-blue font-bold">Example:</strong> An index fund charging 0.05% costs $5 per year on a $10,000 balance, compared to $100 per year for an active fund at 1.00%.</p>
+                    </div>
+                    <p class="text-[14px] text-gray-600 leading-relaxed"><strong class="text-gray-900 font-semibold">Why it matters:</strong> Lower fees keep a significantly larger share of compound growth in your account over decades.</p>
+                </div>
+
+                <!-- Term 10 -->
+                <div class="apple-glass-card p-8 glossary-term flex flex-col h-full">
+                    <h3 class="text-[22px] font-bold tracking-tight text-gray-900 mb-3">Cash Drag</h3>
+                    <p class="text-[15px] text-gray-700 mb-6 leading-relaxed flex-grow"><strong class="text-gray-900 font-bold">Definition:</strong> The reduction in overall portfolio growth caused by holding uninvested cash that earns low interest compared to long-term market assets.</p>
+                    <div class="bg-blue-50/60 border border-blue-100/60 p-5 rounded-2xl mb-4">
+                        <p class="text-[14px] text-gray-800 leading-relaxed"><strong class="text-apple-blue font-bold">Example:</strong> Allocating only 60% of your portfolio to investments while leaving 40% unallocated slows down your overall compound rate.</p>
+                    </div>
+                    <p class="text-[14px] text-gray-600 leading-relaxed"><strong class="text-gray-900 font-semibold">Why it matters:</strong> Ensuring your planned capital is fully allocated avoids unintended growth slowdowns.</p>
+                </div>
+
+                <!-- Term 11 -->
+                <div class="apple-glass-card p-8 glossary-term flex flex-col h-full">
+                    <h3 class="text-[22px] font-bold tracking-tight text-gray-900 mb-3">Lump Sum Investing</h3>
+                    <p class="text-[15px] text-gray-700 mb-6 leading-relaxed flex-grow"><strong class="text-gray-900 font-bold">Definition:</strong> Deploying all available investment capital at once into the market immediately, rather than spreading payments over time.</p>
+                    <div class="bg-blue-50/60 border border-blue-100/60 p-5 rounded-2xl mb-4">
+                        <p class="text-[14px] text-gray-800 leading-relaxed"><strong class="text-apple-blue font-bold">Example:</strong> Investing a $12,000 bonus on Day 1 instead of contributing $1,000 each month for a year.</p>
+                    </div>
+                    <p class="text-[14px] text-gray-600 leading-relaxed"><strong class="text-gray-900 font-semibold">Why it matters:</strong> Historically, lump sum investing outperforms DCA most of the time because markets tend to rise over long periods.</p>
+                </div>
+
+                <!-- Term 12 -->
+                <div class="apple-glass-card p-8 glossary-term flex flex-col h-full">
+                    <h3 class="text-[22px] font-bold tracking-tight text-gray-900 mb-3">Market Volatility & Panic Selling</h3>
+                    <p class="text-[15px] text-gray-700 mb-6 leading-relaxed flex-grow"><strong class="text-gray-900 font-bold">Definition:</strong> Volatility refers to rapid price swings. Panic selling is liquidating assets into cash during a drop out of fear, locking in real losses.</p>
+                    <div class="bg-blue-50/60 border border-blue-100/60 p-5 rounded-2xl mb-4">
+                        <p class="text-[14px] text-gray-800 leading-relaxed"><strong class="text-apple-blue font-bold">Example:</strong> Selling stocks at a 35% market crash bottom and moving to cash prevents you from capturing the eventual recovery surge.</p>
+                    </div>
+                    <p class="text-[14px] text-gray-600 leading-relaxed"><strong class="text-gray-900 font-semibold">Why it matters:</strong> Staying disciplined during corrections is essential for long-term compound performance.</p>
+                </div>
+            </div>
+
+            <!-- Zero Results Message -->
+            <div id="glossary-no-results" class="hidden apple-glass-card p-12 text-center">
+                <p class="text-gray-600 font-semibold text-lg">No matching terms found. Try searching for "Inflation", "Index", or "Bonds".</p>
+            </div>
+        </div>
+
+        <!-- ================= 6. INTERACTIVE TUTORIALS ================= -->
+        <div id="tutorials" class="section hidden space-y-10">
+            <div class="pb-4">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-display font-semibold tracking-tighter text-black/90">Interactive Tutorials</h1>
+                <p class="text-gray-600 text-[17px] mt-4 max-w-2xl leading-relaxed font-medium">Step-by-step guided lessons designed to build your investing intuition.</p>
+            </div>
+
+            <!-- Tutorial Hub View -->
+            <div id="tutorial-hub" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Lesson 1 -->
+                <div class="apple-glass-card p-8 flex flex-col justify-between cursor-pointer hover:scale-[1.02] transition-transform duration-300" onclick="startTutorial(1)">
+                    <div>
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-400 to-apple-blue text-white flex items-center justify-center font-bold text-xl shadow-md">1</div>
+                            <span id="badge-tut-1" class="text-[12px] font-bold px-3 py-1 rounded-full bg-white/80 border border-black/5 text-gray-600 shadow-sm">Not Started</span>
+                        </div>
+                        <h3 class="text-[20px] font-bold tracking-tight text-gray-900 mb-3">Your First Investment</h3>
+                        <p class="text-[15px] text-gray-600 leading-relaxed mb-8 font-medium">Learn how small contributions and compound growth build a hypothetical portfolio over time.</p>
+                    </div>
+                    <button class="w-full py-3.5 bg-white border border-black/5 text-apple-blue font-bold text-[15px] rounded-2xl hover:bg-blue-50 transition-colors shadow-glass-sm apple-pill-btn">Start Lesson</button>
+                </div>
+
+                <!-- Lesson 2 -->
+                <div class="apple-glass-card p-8 flex flex-col justify-between cursor-pointer hover:scale-[1.02] transition-transform duration-300" onclick="startTutorial(2)">
+                    <div>
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-400 to-apple-purple text-white flex items-center justify-center font-bold text-xl shadow-md">2</div>
+                            <span id="badge-tut-2" class="text-[12px] font-bold px-3 py-1 rounded-full bg-white/80 border border-black/5 text-gray-600 shadow-sm">Not Started</span>
+                        </div>
+                        <h3 class="text-[20px] font-bold tracking-tight text-gray-900 mb-3">Understanding Risk</h3>
+                        <p class="text-[15px] text-gray-600 leading-relaxed mb-8 font-medium">Explore the relationship between high-growth stocks, stable bonds, and cash.</p>
+                    </div>
+                    <button class="w-full py-3.5 bg-white border border-black/5 text-apple-purple font-bold text-[15px] rounded-2xl hover:bg-purple-50 transition-colors shadow-glass-sm apple-pill-btn">Start Lesson</button>
+                </div>
+
+                <!-- Lesson 3 -->
+                <div class="apple-glass-card p-8 flex flex-col justify-between cursor-pointer hover:scale-[1.02] transition-transform duration-300" onclick="startTutorial(3)">
+                    <div>
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-400 to-apple-green text-white flex items-center justify-center font-bold text-xl shadow-md">3</div>
+                            <span id="badge-tut-3" class="text-[12px] font-bold px-3 py-1 rounded-full bg-white/80 border border-black/5 text-gray-600 shadow-sm">Not Started</span>
+                        </div>
+                        <h3 class="text-[20px] font-bold tracking-tight text-gray-900 mb-3">The Power of Time</h3>
+                        <p class="text-[15px] text-gray-600 leading-relaxed mb-8 font-medium">Compare two investors interactively to see why starting early is your greatest asset.</p>
+                    </div>
+                    <button class="w-full py-3.5 bg-white border border-black/5 text-apple-green font-bold text-[15px] rounded-2xl hover:bg-green-50 transition-colors shadow-glass-sm apple-pill-btn">Start Lesson</button>
+                </div>
+            </div>
+
+            <!-- Active Lesson Viewer -->
+            <div id="tutorial-viewer" class="hidden max-w-4xl mx-auto">
+                <button onclick="closeTutorial()" class="text-[15px] font-bold text-gray-600 hover:text-gray-900 mb-8 flex items-center gap-1.5 transition-colors bg-white/70 backdrop-blur-xl px-4 py-2 rounded-full shadow-sm w-fit apple-pill-btn">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                    Back to Tutorials
+                </button>
+
+                <div class="apple-glass-card overflow-hidden relative">
+                    <!-- Header -->
+                    <div class="bg-white/70 px-8 py-6 border-b border-white flex justify-between items-center backdrop-blur-xl">
+                        <h2 id="tut-active-title" class="font-bold tracking-tight text-[22px] text-gray-900">Lesson Title</h2>
+                        <span id="tut-progress-text" class="text-[13px] text-gray-600 font-bold uppercase tracking-widest">Step 1 of 3</span>
+                    </div>
+
+                    <!-- Dynamic Steps Content Container -->
+                    <div class="p-8 sm:p-12 min-h-[380px]" id="tut-step-container">
+                        <!-- Content injected via JS -->
+                    </div>
+
+                    <!-- Footer Controls -->
+                    <div class="px-8 py-6 bg-white/70 border-t border-white flex justify-between backdrop-blur-xl">
+                        <button id="tut-prev-btn" onclick="prevTutorialStep()" class="px-6 py-3 text-[15px] font-bold text-gray-600 hover:text-gray-900 transition-colors invisible">Previous</button>
+                        <button id="tut-next-btn" onclick="nextTutorialStep()" class="px-8 py-3 text-[15px] font-bold bg-apple-blue text-white rounded-full hover:bg-blue-600 transition-colors shadow-md apple-pill-btn">Next Step</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-12 text-center text-[13px] text-gray-600 font-medium">
+        <div class="max-w-7xl mx-auto px-4">
+            <p>InvestLab • Premium Educational Platform</p>
+            <p class="mt-2 text-gray-500">Simulations rely on static assumptions and do not guarantee future returns.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Global Chart Styling Helpers
+        const getChartColors = () => {
+            return {
+                text: '#515154',
+                grid: 'rgba(0, 0, 0, 0.04)',
+                tooltipBg: 'rgba(255, 255, 255, 0.95)',
+                tooltipText: '#1D1D1F',
+                tooltipBorder: 'rgba(0, 0, 0, 0.08)'
+            };
+        };
+
+        const commonChartOptions = () => {
+            const colors = getChartColors();
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: { 
+                        labels: { color: colors.text, font: { family: '-apple-system, BlinkMacSystemFont, sans-serif', size: 13, weight: '600' }, usePointStyle: true, boxWidth: 8, padding: 20 } 
+                    },
+                    tooltip: {
+                        backgroundColor: colors.tooltipBg,
+                        titleColor: colors.tooltipText,
+                        bodyColor: colors.tooltipText,
+                        borderColor: colors.tooltipBorder,
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 16,
+                        titleFont: { family: '-apple-system, sans-serif', size: 14, weight: '700' },
+                        bodyFont: { family: '-apple-system, sans-serif', size: 14, weight: '500' },
+                        backdropFilter: 'blur(20px)',
+                        boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                        callbacks: {
+                            label: function(context) { return ' ' + context.dataset.label + ': ' + formatter.format(context.raw); }
+                        }
+                    }
+                },
+                scales: {
+                    x: { 
+                        grid: { display: false }, 
+                        ticks: { color: colors.text, font: { family: '-apple-system, sans-serif', weight: '600' }, maxRotation: 0 } 
+                    },
+                    y: { 
+                        grid: { color: colors.grid, drawBorder: false }, 
+                        border: { display: false },
+                        ticks: { 
+                            color: colors.text, 
+                            font: { family: '-apple-system, sans-serif', weight: '600' },
+                            callback: value => '$' + (value >= 1000 ? (value/1000).toFixed(0) + 'k' : value),
+                            padding: 10
+                        } 
+                    }
+                }
+            };
+        };
+
+        // Currency Formatter Utility
+        const formatter = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            maximumFractionDigits: 0
+        });
+
+        // Global Chart Instances
+        let simulatorChartInstance = null;
+        let scenarioChartInstance = null;
+        let compareChartInstance = null;
+
+        // Core Financial Math Engine
+        function calculateMonthlyCompounding(initial, monthly, annualReturnPct, years) {
+            const totalMonths = years * 12;
+            const monthlyRate = (annualReturnPct / 100) / 12;
+            let balance = initial;
+            let totalContributed = initial;
+
+            const annualData = [{ year: 0, balance: initial, contributions: initial, gains: 0 }];
+
+            for (let m = 1; m <= totalMonths; m++) {
+                balance = balance * (1 + monthlyRate) + monthly;
+                totalContributed += monthly;
+
+                if (m % 12 === 0) {
+                    const year = m / 12;
+                    annualData.push({
+                        year: year,
+                        balance: Math.round(balance),
+                        contributions: Math.round(totalContributed),
+                        gains: Math.round(balance - totalContributed)
+                    });
+                }
+            }
+            return annualData;
+        }
+
+        // Section Switcher Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
+            document.querySelectorAll('.nav-link').forEach(btn => btn.classList.remove('active'));
+
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) targetSection.classList.remove('hidden');
+
+            const targetNav = document.getElementById('nav-' + sectionId);
+            if (targetNav) targetNav.classList.add('active');
+
+            if (sectionId === 'simulator') updateSimulator();
+            if (sectionId === 'scenarios') updateScenario();
+            if (sectionId === 'compare') updateCompare();
+            if (sectionId === 'challenges') updateChallenge();
+            
+            if (sectionId !== 'tutorials') closeTutorial();
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            if (menu) menu.classList.toggle('hidden');
+        }
+
+        // ================= 1. SIMULATOR LOGIC =================
+        let currentSimBalance = 0;
+        let currentSimGains = 0;
+
+        function updateAllocations(changedKey) {
+            const keys = ['sp500', 'us', 'intl', 'bond', 'savings'];
+            let currentSum = 0;
+            keys.forEach(k => {
+                currentSum += parseInt(document.getElementById('alloc-' + k).value) || 0;
+                document.getElementById('alloc-' + k + '-val').innerText = document.getElementById('alloc-' + k).value + '%';
+            });
+
+            const badge = document.getElementById('alloc-badge');
+            const autoBtn = document.getElementById('auto-balance-btn');
+            
+            if (currentSum === 100) {
+                badge.className = "px-4 py-2 rounded-full text-[13px] font-bold bg-white text-gray-800 shadow-sm border border-black/5";
+                badge.innerText = "100% Allocated";
+                if(autoBtn) autoBtn.classList.add('hidden');
+            } else if (currentSum < 100) {
+                badge.className = "px-4 py-2 rounded-full text-[13px] font-bold bg-amber-50 text-amber-800 shadow-sm border border-amber-200/60";
+                badge.innerText = `${currentSum}% (${100 - currentSum}% Cash Drag)`;
+                if(autoBtn) autoBtn.classList.remove('hidden');
+            } else {
+                badge.className = "px-4 py-2 rounded-full text-[13px] font-bold bg-red-50 text-red-800 shadow-sm border border-red-200/60";
+                badge.innerText = `Over-allocated: ${currentSum}%`;
+                if(autoBtn) autoBtn.classList.remove('hidden');
+            }
+
+            updateSimulator();
+        }
+
+        function autoBalanceAllocations() {
+            const keys = ['sp500', 'us', 'intl', 'bond', 'savings'];
+            let currentSum = 0;
+            const values = {};
+            keys.forEach(k => {
+                values[k] = parseInt(document.getElementById('alloc-' + k).value) || 0;
+                currentSum += values[k];
+            });
+
+            if (currentSum === 0) {
+                document.getElementById('alloc-sp500').value = 60;
+                document.getElementById('alloc-us').value = 20;
+                document.getElementById('alloc-intl').value = 10;
+                document.getElementById('alloc-bond').value = 10;
+                document.getElementById('alloc-savings').value = 0;
+            } else {
+                let newSum = 0;
+                keys.forEach((k, index) => {
+                    if (index === keys.length - 1) {
+                        document.getElementById('alloc-' + k).value = Math.max(0, 100 - newSum);
+                    } else {
+                        const scaled = Math.round((values[k] / currentSum) * 100);
+                        document.getElementById('alloc-' + k).value = scaled;
+                        newSum += scaled;
+                    }
+                });
+            }
+            updateAllocations('auto');
+        }
+
+        function resetAllocations() {
+            document.getElementById('alloc-sp500').value = 60;
+            document.getElementById('alloc-us').value = 20;
+            document.getElementById('alloc-intl').value = 10;
+            document.getElementById('alloc-bond').value = 10;
+            document.getElementById('alloc-savings').value = 0;
+            updateAllocations('reset');
+        }
+
+        function updateSimulator() {
+            const initial = Math.max(0, parseFloat(document.getElementById('sim-initial').value) || 0);
+            const monthly = Math.max(0, parseFloat(document.getElementById('sim-monthly').value) || 0);
+            const years = Math.max(1, parseInt(document.getElementById('sim-years').value) || 30);
+            document.getElementById('sim-years-val').innerText = years + " Years";
+
+            const sp500Alloc = parseFloat(document.getElementById('alloc-sp500').value) || 0;
+            const usAlloc = parseFloat(document.getElementById('alloc-us').value) || 0;
+            const intlAlloc = parseFloat(document.getElementById('alloc-intl').value) || 0;
+            const bondAlloc = parseFloat(document.getElementById('alloc-bond').value) || 0;
+            const savingsAlloc = parseFloat(document.getElementById('alloc-savings').value) || 0;
+
+            const totalAlloc = sp500Alloc + usAlloc + intlAlloc + bondAlloc + savingsAlloc;
+            let weightedReturn = 0;
+
+            if (totalAlloc === 0) {
+                weightedReturn = 0;
+            } else if (totalAlloc <= 100) {
+                weightedReturn = (
+                    (sp500Alloc * 10.0) +
+                    (usAlloc * 9.8) +
+                    (intlAlloc * 7.5) +
+                    (bondAlloc * 4.5) +
+                    (savingsAlloc * 2.5)
+                ) / 100;
+            } else {
+                weightedReturn = (
+                    (sp500Alloc * 10.0) +
+                    (usAlloc * 9.8) +
+                    (intlAlloc * 7.5) +
+                    (bondAlloc * 4.5) +
+                    (savingsAlloc * 2.5)
+                ) / totalAlloc;
+            }
+
+            document.getElementById('sim-res-return').innerText = weightedReturn.toFixed(1) + "%";
+
+            const data = calculateMonthlyCompounding(initial, monthly, weightedReturn, years);
+            const finalData = data[data.length - 1];
+
+            // Store globally for tax calculator
+            currentSimBalance = finalData.balance;
+            currentSimGains = finalData.gains;
+
+            document.getElementById('sim-res-final').innerText = formatter.format(finalData.balance);
+            document.getElementById('sim-res-cont').innerText = formatter.format(finalData.contributions);
+            document.getElementById('sim-res-gains').innerText = formatter.format(finalData.gains);
+
+            const labels = data.map(d => 'Yr ' + d.year);
+            const balanceSeries = data.map(d => d.balance);
+            const contributionSeries = data.map(d => d.contributions);
+
+            const ctx = document.getElementById('simulatorChart').getContext('2d');
+            if (simulatorChartInstance) simulatorChartInstance.destroy();
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(0, 122, 255, 0.25)');
+            gradient.addColorStop(1, 'rgba(0, 122, 255, 0.0)');
+
+            const opts = commonChartOptions();
+            
+            simulatorChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Total Value',
+                            data: balanceSeries,
+                            borderColor: '#007AFF',
+                            backgroundColor: gradient,
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#007AFF',
+                            pointBorderWidth: 2
+                        },
+                        {
+                            label: 'Total Deposits',
+                            data: contributionSeries,
+                            borderColor: '#8E8E93',
+                            backgroundColor: 'transparent',
+                            borderDash: [6, 6],
+                            tension: 0.4,
+                            borderWidth: 2,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: opts
+            });
+
+            // Update Tax UI
+            updateTaxComparison();
+
+            // Save simulator state to localStorage
+            saveSimulatorState();
+        }
+
+        function updateTaxComparison() {
+            const taxRateInput = document.getElementById('tax-cgt-rate');
+            if (!taxRateInput) return;
+            
+            const taxRate = parseFloat(taxRateInput.value) || 0;
+            document.getElementById('tax-cgt-val').innerText = taxRate + '%';
+
+            // Roth IRA assumes qualified withdrawals meaning 100% tax free growth
+            const rothTakeHome = currentSimBalance;
+
+            // Taxable Brokerage assumes taxes paid on all accumulated investment gains upon withdrawal
+            const taxesOwed = currentSimGains * (taxRate / 100);
+            const taxableTakeHome = currentSimBalance - taxesOwed;
+
+            document.getElementById('tax-roth-val').innerText = formatter.format(rothTakeHome);
+            document.getElementById('tax-brokerage-val').innerText = formatter.format(taxableTakeHome);
+            document.getElementById('tax-saved-val').innerText = formatter.format(taxesOwed);
+        }
+
+        // ================= 2. MARKET SCENARIOS & RISK QUIZ LOGIC =================
+        let currentScenarioType = 'normal';
+
+        function selectScenario(type) {
+            currentScenarioType = type;
+            document.querySelectorAll('#scenarios button[id^="scen-btn-"]').forEach(btn => {
+                btn.className = "w-full text-left p-5 rounded-2xl border border-transparent bg-white/50 hover:bg-white/80 transition-all flex items-center justify-between apple-pill-btn";
+                btn.querySelector('span:first-child').className = "font-medium text-[16px] text-gray-700";
+            });
+            const activeBtn = document.getElementById('scen-btn-' + type);
+            if (activeBtn) {
+                activeBtn.className = "w-full text-left p-5 rounded-2xl border border-black/5 bg-white shadow-glass-sm transition-all flex items-center justify-between apple-pill-btn";
+                activeBtn.querySelector('span:first-child').className = "font-bold text-[16px] text-gray-900";
+            }
+            updateScenario();
+        }
+
+        function updateScenario() {
+            const initial = Math.max(0, parseFloat(document.getElementById('scen-initial').value) || 10000);
+            const monthly = Math.max(0, parseFloat(document.getElementById('scen-monthly').value) || 250);
+            const years = Math.max(5, parseInt(document.getElementById('scen-years').value) || 25);
+
+            const labels = [];
+            const stayCourseSeries = [];
+            const panicSellSeries = [];
+
+            let stayBalance = initial;
+            let panicBalance = initial;
+            let isPanicked = false;
+
+            const shockYear = Math.min(10, Math.floor(years / 2));
+            const baseMonthlyRate = (8.5 / 100) / 12;
+            const cashMonthlyRate = (2.0 / 100) / 12;
+
+            labels.push('Yr 0');
+            stayCourseSeries.push(initial);
+            panicSellSeries.push(initial);
+
+            let preShockValue = 0;
+            let postShockValue = 0;
+
+            for (let y = 1; y <= years; y++) {
+                for (let m = 1; m <= 12; m++) {
+                    const isShockMonth = (y === shockYear && m === 1);
+
+                    let effectiveRate = baseMonthlyRate;
+
+                    if (currentScenarioType === 'lostDecade' && y >= shockYear && y < shockYear + 10) {
+                        effectiveRate = (0.5 / 100) / 12;
+                    } else if (currentScenarioType === 'recovery' && y >= shockYear + 1 && y <= shockYear + 3) {
+                        effectiveRate = (18.0 / 100) / 12;
+                    }
+
+                    stayBalance = stayBalance * (1 + effectiveRate) + monthly;
+
+                    if (isShockMonth) {
+                        if (currentScenarioType === 'decline20') stayBalance *= 0.80;
+                        if (currentScenarioType === 'crash35' || currentScenarioType === 'recovery') stayBalance *= 0.65;
+                    }
+
+                    if (!isPanicked) {
+                        panicBalance = panicBalance * (1 + effectiveRate) + monthly;
+                        if (isShockMonth) {
+                            if (currentScenarioType === 'decline20') panicBalance *= 0.80;
+                            if (currentScenarioType === 'crash35' || currentScenarioType === 'recovery') panicBalance *= 0.65;
+                            if (currentScenarioType !== 'normal') isPanicked = true;
+                        } else if (currentScenarioType === 'lostDecade' && y === shockYear + 2 && m === 1) {
+                            isPanicked = true;
+                        }
+                    } else {
+                        panicBalance = panicBalance * (1 + cashMonthlyRate) + monthly;
+                    }
+
+                    if (y === shockYear && m === 1) postShockValue = Math.round(stayBalance);
+                }
+
+                if (y === shockYear - 1) preShockValue = Math.round(stayBalance);
+
+                labels.push('Yr ' + y);
+                stayCourseSeries.push(Math.round(stayBalance));
+                panicSellSeries.push(Math.round(panicBalance));
+            }
+
+            const lbl1 = document.getElementById('scen-lbl-1');
+            const lbl2 = document.getElementById('scen-lbl-2');
+            const val1 = document.getElementById('scen-val-before');
+            const val2 = document.getElementById('scen-val-after');
+
+            if (currentScenarioType === 'normal') {
+                if (lbl1) lbl1.innerText = 'Year 5 Balance';
+                if (lbl2) lbl2.innerText = 'Year 10 Balance';
+                val1.className = "text-3xl font-display font-semibold text-gray-900 tracking-tight";
+                val2.className = "text-3xl font-display font-bold text-apple-blue tracking-tight";
+                val1.innerText = formatter.format(stayCourseSeries[5] || preShockValue);
+                val2.innerText = formatter.format(stayCourseSeries[10] || postShockValue);
+            } else if (currentScenarioType === 'lostDecade') {
+                if (lbl1) lbl1.innerText = 'Pre-Flat Decade';
+                if (lbl2) lbl2.innerText = 'End of Flat Decade';
+                val1.className = "text-3xl font-display font-semibold text-gray-900 tracking-tight";
+                val2.className = "text-3xl font-display font-bold text-apple-orange tracking-tight";
+                val1.innerText = formatter.format(preShockValue || initial);
+                val2.innerText = formatter.format(stayCourseSeries[shockYear + 9] || stayCourseSeries[19]);
+            } else {
+                if (lbl1) lbl1.innerText = 'Pre-Shock Peak';
+                if (lbl2) lbl2.innerText = 'Post-Shock Trough';
+                val1.className = "text-3xl font-display font-semibold text-gray-900 tracking-tight";
+                val2.className = "text-3xl font-display font-bold text-apple-red tracking-tight";
+                val1.innerText = formatter.format(preShockValue || initial);
+                val2.innerText = formatter.format(postShockValue || stayCourseSeries[shockYear]);
+            }
+
+            document.getElementById('scen-val-final').innerText = formatter.format(stayCourseSeries[stayCourseSeries.length - 1]);
+
+            const ctx = document.getElementById('scenarioChart').getContext('2d');
+            if (scenarioChartInstance) scenarioChartInstance.destroy();
+
+            scenarioChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Stay Invested',
+                            data: stayCourseSeries,
+                            borderColor: '#34C759',
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#34C759',
+                            pointBorderWidth: 2
+                        },
+                        {
+                            label: 'Panic Sell to Cash',
+                            data: panicSellSeries,
+                            borderColor: '#FF3B30',
+                            borderDash: [6, 6],
+                            tension: 0.4,
+                            borderWidth: 2,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: commonChartOptions()
+            });
+        }
+
+        // Behavioral Risk Profile Quiz Logic
+        let calculatedQuizAllocation = { sp500: 50, us: 20, intl: 10, bond: 15, savings: 5 };
+
+        function calcRiskProfile() {
+            const q1 = parseInt(document.getElementById('quiz-q1').value) || 2;
+            const q2 = parseInt(document.getElementById('quiz-q2').value) || 3;
+            const q3 = parseInt(document.getElementById('quiz-q3').value) || 2;
+
+            const score = q1 + q2 + q3;
+            const titleEl = document.getElementById('quiz-profile-title');
+            const descEl = document.getElementById('quiz-profile-desc');
+
+            if (score <= 4) {
+                titleEl.innerText = "Conservative Investor";
+                descEl.innerText = "Recommended Allocation: 30% Equities / 50% Bonds / 20% Cash";
+                calculatedQuizAllocation = { sp500: 20, us: 10, intl: 0, bond: 50, savings: 20 };
+            } else if (score <= 7) {
+                titleEl.innerText = "Balanced Investor";
+                descEl.innerText = "Recommended Allocation: 60% Equities / 30% Bonds / 10% Cash";
+                calculatedQuizAllocation = { sp500: 40, us: 15, intl: 5, bond: 30, savings: 10 };
+            } else if (score <= 9) {
+                titleEl.innerText = "Growth Investor";
+                descEl.innerText = "Recommended Allocation: 80% Equities / 15% Bonds / 5% Cash";
+                calculatedQuizAllocation = { sp500: 55, us: 15, intl: 10, bond: 15, savings: 5 };
+            } else {
+                titleEl.innerText = "Aggressive Growth Investor";
+                descEl.innerText = "Recommended Allocation: 100% Equities / 0% Bonds / 0% Cash";
+                calculatedQuizAllocation = { sp500: 60, us: 25, intl: 15, bond: 0, savings: 0 };
+            }
+        }
+
+        function applyQuizAllocation() {
+            document.getElementById('alloc-sp500').value = calculatedQuizAllocation.sp500;
+            document.getElementById('alloc-us').value = calculatedQuizAllocation.us;
+            document.getElementById('alloc-intl').value = calculatedQuizAllocation.intl;
+            document.getElementById('alloc-bond').value = calculatedQuizAllocation.bond;
+            document.getElementById('alloc-savings').value = calculatedQuizAllocation.savings;
+            
+            showSection('simulator');
+            updateAllocations('quiz');
+        }
+
+        // ================= 3. COMPARE STRATEGIES LOGIC =================
+        function updateCompare() {
+            const initial = Math.max(0, parseFloat(document.getElementById('comp-initial').value) || 0);
+            const monthly = Math.max(0, parseFloat(document.getElementById('comp-monthly').value) || 0);
+            const years = Math.max(5, parseInt(document.getElementById('comp-years').value) || 30);
+            const inflation = Math.max(0, parseFloat(document.getElementById('comp-inflation').value) || 0);
+
+            // Strategy 1: Cash Savings (2.5%)
+            const s1 = calculateMonthlyCompounding(initial, monthly, 2.5, years);
+            const s1Final = s1[s1.length - 1].balance;
+            
+            // Strategy 2: Balanced 60/40 (7.7%)
+            const s2 = calculateMonthlyCompounding(initial, monthly, 7.7, years);
+            const s2Final = s2[s2.length - 1].balance;
+            
+            // Strategy 3: Stock Monthly DCA (9.8%)
+            const s3 = calculateMonthlyCompounding(initial, monthly, 9.8, years);
+            const s3Final = s3[s3.length - 1].balance;
+            
+            // Strategy 4: Stock Lump Sum (9.8% upfront on lifetime principal)
+            const totalLifetimePrincipal = initial + (monthly * 12 * years);
+            const s4 = calculateMonthlyCompounding(totalLifetimePrincipal, 0, 9.8, years);
+            const s4Final = s4[s4.length - 1].balance;
+
+            // Inflation Discount Factor PV = FV / (1 + i)^n
+            const infRate = inflation / 100;
+            const discountFactor = Math.pow(1 + infRate, years);
+
+            document.getElementById('comp-s1-final').innerText = formatter.format(s1Final);
+            document.getElementById('comp-s1-adj').innerText = formatter.format(Math.round(s1Final / discountFactor));
+            
+            document.getElementById('comp-s2-final').innerText = formatter.format(s2Final);
+            document.getElementById('comp-s2-adj').innerText = formatter.format(Math.round(s2Final / discountFactor));
+            
+            document.getElementById('comp-s3-final').innerText = formatter.format(s3Final);
+            document.getElementById('comp-s3-adj').innerText = formatter.format(Math.round(s3Final / discountFactor));
+            
+            document.getElementById('comp-s4-final').innerText = formatter.format(s4Final);
+            document.getElementById('comp-s4-adj').innerText = formatter.format(Math.round(s4Final / discountFactor));
+
+            // Chart Data
+            const labels = s1.map(d => 'Yr ' + d.year);
+            const s1Data = s1.map(d => d.balance);
+            const s2Data = s2.map(d => d.balance);
+            const s3Data = s3.map(d => d.balance);
+            const s4Data = s4.map(d => d.balance);
+
+            const ctx = document.getElementById('compareChart').getContext('2d');
+            if (compareChartInstance) compareChartInstance.destroy();
+
+            compareChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Savings (2.5%)',
+                            data: s1Data,
+                            borderColor: '#FF9500',
+                            backgroundColor: 'transparent',
+                            tension: 0.4,
+                            borderWidth: 2,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Balanced (7.7%)',
+                            data: s2Data,
+                            borderColor: '#007AFF',
+                            backgroundColor: 'transparent',
+                            tension: 0.4,
+                            borderWidth: 2,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Stock DCA (9.8%)',
+                            data: s3Data,
+                            borderColor: '#34C759',
+                            backgroundColor: 'transparent',
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Stock Lump (9.8%)',
+                            data: s4Data,
+                            borderColor: '#AF52DE',
+                            borderDash: [6, 6],
+                            backgroundColor: 'transparent',
+                            tension: 0.4,
+                            borderWidth: 2,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: commonChartOptions()
+            });
+        }
+
+        // ================= 4. MILLIONAIRE CHALLENGE LOGIC =================
+        function clearPresetSelection() {
+            document.querySelectorAll('.chal-preset-btn').forEach(btn => {
+                btn.className = "chal-preset-btn px-4 py-4 text-[15px] font-semibold bg-white border border-black/5 hover:bg-gray-50 rounded-2xl text-gray-700 transition-all shadow-sm apple-pill-btn";
+                const span = btn.querySelector('span');
+                if (span) span.className = "block text-[11px] font-normal text-gray-500 mt-0.5";
+            });
+        }
+
+        function updateChallenge(isPresetCall = false) {
+            if (!isPresetCall) {
+                clearPresetSelection();
+            }
+
+            const initial = Math.max(0, parseFloat(document.getElementById('chal-initial').value) || 0);
+            const monthly = Math.max(0, parseFloat(document.getElementById('chal-monthly').value) || 0);
+            const returnPct = Math.max(0, parseFloat(document.getElementById('chal-return').value) || 0);
+            const targetYears = Math.max(1, parseInt(document.getElementById('chal-years').value) || 40);
+
+            const series = calculateMonthlyCompounding(initial, monthly, returnPct, targetYears);
+            const finalVal = series[series.length - 1].balance;
+
+            document.getElementById('chal-final-val').innerText = formatter.format(finalVal);
+
+            let progressPct = (finalVal / 1000000) * 100;
+            if (progressPct > 100) progressPct = 100;
+            document.getElementById('chal-progress').style.width = progressPct.toFixed(1) + '%';
+
+            const monthlyRate = (returnPct / 100) / 12;
+            let testBal = initial;
+            let hitMonth = -1;
+
+            if (initial >= 1000000) {
+                hitMonth = 0;
+            } else if (monthly > 0 || monthlyRate > 0) {
+                for (let m = 1; m <= 1200; m++) {
+                    testBal = testBal * (1 + monthlyRate) + monthly;
+                    if (testBal >= 1000000) {
+                        hitMonth = m;
+                        break;
+                    }
+                }
+            }
+
+            const msgEl = document.getElementById('chal-time-msg');
+            if (hitMonth === 0) {
+                msgEl.innerHTML = `You are already a <span class="font-bold text-apple-green">Millionaire</span>!`;
+            } else if (hitMonth > 0) {
+                const y = Math.floor(hitMonth / 12);
+                const m = hitMonth % 12;
+                msgEl.innerHTML = `At this rate, you hit $1M in <span class="font-bold text-gray-900">${y} years, ${m} months</span>.`;
+            } else {
+                msgEl.innerHTML = `At this rate, it takes <span class="font-bold text-apple-red">over 100 years</span> to reach $1M.`;
+            }
+        }
+
+        function setChallengePreset(startAge) {
+            clearPresetSelection();
+
+            const activeBtn = document.getElementById('chal-preset-' + startAge);
+            if (activeBtn) {
+                activeBtn.className = "chal-preset-btn px-4 py-4 text-[15px] font-bold bg-gray-900 text-white rounded-2xl transition-all shadow-md apple-pill-btn";
+                const span = activeBtn.querySelector('span');
+                if (span) span.className = "block text-[11px] font-medium text-gray-300 mt-0.5";
+            }
+
+            const horizon = 65 - startAge;
+            document.getElementById('chal-initial').value = 1000;
+            document.getElementById('chal-monthly').value = startAge === 18 ? 250 : startAge === 25 ? 400 : startAge === 35 ? 900 : 2200;
+            document.getElementById('chal-return').value = 9.0;
+            document.getElementById('chal-years').value = horizon;
+            document.getElementById('chal-years-val').innerText = horizon + " Years";
+            updateChallenge(true);
+        }
+
+        // ================= 5. LEARN THE BASICS LOGIC =================
+        function filterGlossary() {
+            const query = document.getElementById('glossary-search').value.toLowerCase().trim();
+            const terms = document.querySelectorAll('.glossary-term');
+            let matchCount = 0;
+            
+            terms.forEach(term => {
+                const text = term.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    term.style.display = '';
+                    matchCount++;
+                } else {
+                    term.style.display = 'none';
+                }
+            });
+
+            const noResultsEl = document.getElementById('glossary-no-results');
+            if (noResultsEl) {
+                if (matchCount === 0 && query !== '') {
+                    noResultsEl.classList.remove('hidden');
+                } else {
+                    noResultsEl.classList.add('hidden');
+                }
+            }
+        }
+
+        // ================= 6. INTERACTIVE TUTORIALS LOGIC =================
+        const tutorialData = {
+            1: {
+                title: "Your First Investment",
+                steps: [
+                    {
+                        html: `
+                            <h3 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">Planting the Seed</h3>
+                            <p class="text-[16px] text-gray-700 leading-relaxed mb-4">Investing is not just for the wealthy. It starts with two simple variables: your <strong class="text-gray-900">Starting Balance</strong> and your <strong class="text-gray-900">Monthly Contribution</strong>.</p>
+                            <p class="text-[16px] text-gray-700 leading-relaxed">Think of your starting balance as a seed, and your monthly contributions as water. Over time, thanks to compound growth, your capital can grow exponentially.</p>
+                        `
+                    },
+                    {
+                        html: `
+                            <h3 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">See It In Action</h3>
+                            <p class="text-[16px] text-gray-700 leading-relaxed mb-8">Let's simulate investing <strong class="text-gray-900">$100 a month</strong> at an assumed 8.0% annual return. Move the timeline slider to see how compounding accelerates over time.</p>
+                            
+                            <div class="bg-blue-50/60 p-8 rounded-3xl border border-blue-100/60 shadow-glass-sm">
+                                <div class="flex justify-between items-center mb-4">
+                                    <label for="tut1-range-input" class="text-[12px] font-bold uppercase tracking-widest text-gray-600">Timeline Horizon</label>
+                                    <span id="tut1-year-val" class="font-bold text-apple-blue bg-white px-3 py-1 rounded-full shadow-sm">10 Years</span>
+                                </div>
+                                <input type="range" id="tut1-range-input" class="w-full accent-apple-blue mb-8" min="1" max="40" value="10" oninput="tut1Calc(this.value)">
+                                
+                                <div class="flex justify-between items-end border-t border-black/5 pt-6">
+                                    <div>
+                                        <span class="block text-[12px] font-bold uppercase tracking-widest text-gray-500 mb-1">Deposits</span>
+                                        <span id="tut1-cont" class="font-bold text-xl text-gray-900">$12,000</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="block text-[12px] font-bold uppercase tracking-widest text-apple-green/90 mb-1">Final Balance</span>
+                                        <span id="tut1-bal" class="text-4xl font-display font-bold text-apple-green tracking-tight">$18,295</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `,
+                        onInit: () => tut1Calc(10)
+                    },
+                    {
+                        html: `
+                            <h3 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">Key Takeaway</h3>
+                            <p class="text-[16px] text-gray-700 leading-relaxed mb-6">In the early years, most of your balance comes directly from out-of-pocket deposits. In later years, compound growth takes over, generating more return than your principal deposits!</p>
+                            <div class="bg-blue-50 p-6 rounded-2xl">
+                                <p class="text-[16px] font-bold text-apple-blue text-center">The earlier you start, the less effort it takes to reach long-term goals.</p>
+                            </div>
+                        `
+                    }
+                ]
+            },
+            2: {
+                title: "Understanding Risk & Diversification",
+                steps: [
+                    {
+                        html: `
+                            <h3 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">Asset Classes</h3>
+                            <p class="text-[16px] text-gray-700 leading-relaxed mb-4">Portfolios are constructed using three core building blocks: <strong class="text-gray-900">Stocks</strong> (higher risk, high growth potential), <strong class="text-gray-900">Bonds</strong> (moderate risk, income focus), and <strong class="text-gray-900">Cash/Savings</strong> (low price risk, modest yield).</p>
+                            <p class="text-[16px] text-gray-700 leading-relaxed">Holding a mix of all three (Diversification) balances portfolio stability with growth.</p>
+                        `
+                    },
+                    {
+                        html: `
+                            <h3 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">Adjust Your Portfolio Mix</h3>
+                            <p class="text-[16px] text-gray-700 leading-relaxed mb-8">Drag the stock allocation slider to observe how shifting between Stocks, Bonds, and Cash impacts expected return and risk profile.</p>
+                            
+                            <div class="bg-purple-50/60 p-8 rounded-3xl border border-purple-100/60 shadow-glass-sm">
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="text-[14px] font-bold text-gray-900 bg-white px-3 py-1 rounded-full shadow-sm" id="tut2-stock-lbl">Stocks: 60%</span>
+                                    <span class="text-[13px] font-medium text-gray-600" id="tut2-bond-lbl">Bonds: 30% | Cash: 10%</span>
+                                </div>
+                                <input type="range" id="tut2-range-input" class="w-full accent-apple-purple mb-8" min="0" max="100" value="60" oninput="tut2Calc(this.value)">
+                                
+                                <div class="flex justify-between items-center border-t border-black/5 pt-6">
+                                    <div>
+                                        <span class="block text-[12px] font-bold uppercase tracking-widest text-apple-purple/90 mb-1">Assumed Return</span>
+                                        <span id="tut2-ret" class="font-bold text-2xl text-apple-purple">7.6% / yr</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="block text-[12px] font-bold uppercase tracking-widest text-gray-500 mb-1">Risk Profile</span>
+                                        <span id="tut2-risk" class="font-bold text-xl text-amber-600 bg-white px-4 py-2 rounded-xl shadow-sm">Moderate Risk</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `,
+                        onInit: () => tut2Calc(60)
+                    },
+                    {
+                        html: `
+                            <h3 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">Managing Volatility</h3>
+                            <p class="text-[16px] text-gray-700 leading-relaxed mb-4">Higher long-term returns require accepting short-term market fluctuations. Younger investors with long horizons can typically allocate more to stocks, while those nearing capital withdrawal rely more on bonds and cash for stability.</p>
+                        `
+                    }
+                ]
+            },
+            3: {
+                title: "The Power of Time",
+                steps: [
+                    {
+                        html: `
+                            <h3 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">The Compounding Advantage</h3>
+                            <p class="text-[16px] text-gray-700 leading-relaxed mb-4">In investing, <strong class="text-gray-900">Time</strong> is often even more influential than dollar contribution amounts. Let's compare two hypothetical investors with different starting ages to see outcomes by age 65.</p>
+                        `
+                    },
+                    {
+                        html: `
+                            <h3 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">Interactive Head-to-Head</h3>
+                            <p class="text-[15px] text-gray-700 leading-relaxed mb-6">Adjust the starting ages below to see why Investor A (who starts early) easily outperforms Investor B, even if Investor B contributes double every month!</p>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-4">
+                                <div class="bg-green-50/60 p-6 rounded-3xl border border-green-100/60 shadow-glass-sm">
+                                    <h4 class="font-bold text-apple-green text-[17px] mb-4">Investor A (Early)</h4>
+                                    <div class="space-y-4">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-[12px] font-bold uppercase tracking-widest text-gray-600">Start Age</span>
+                                            <span id="tut3-a-age-lbl" class="font-bold text-gray-900 bg-white px-3 py-1 rounded-full shadow-sm">20</span>
+                                        </div>
+                                        <input type="range" class="w-full accent-apple-green" min="18" max="35" value="20" oninput="tut3Calc()">
+                                        <div class="flex justify-between pt-2">
+                                            <span class="text-[14px] font-medium text-gray-600">Monthly Deposit:</span>
+                                            <span class="font-bold text-gray-900">$200</span>
+                                        </div>
+                                        <div class="pt-4 border-t border-black/5 text-center">
+                                            <span class="block text-[12px] font-semibold text-gray-500 mb-1">Total Deposited: <span id="tut3-a-cont" class="font-bold text-gray-800">$108,000</span></span>
+                                            <span class="block text-3xl font-display font-bold text-apple-green tracking-tight" id="tut3-a-final">$1,050,088</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-red-50/60 p-6 rounded-3xl border border-red-100/60 shadow-glass-sm">
+                                    <h4 class="font-bold text-apple-red text-[17px] mb-4">Investor B (Late)</h4>
+                                    <div class="space-y-4">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-[12px] font-bold uppercase tracking-widest text-gray-600">Start Age</span>
+                                            <span id="tut3-b-age-lbl" class="font-bold text-gray-900 bg-white px-3 py-1 rounded-full shadow-sm">40</span>
+                                        </div>
+                                        <input type="range" class="w-full accent-apple-red" min="36" max="55" value="40" oninput="tut3Calc()">
+                                        <div class="flex justify-between pt-2">
+                                            <span class="text-[14px] font-medium text-gray-600">Monthly Deposit:</span>
+                                            <span class="font-bold text-gray-900">$400</span>
+                                        </div>
+                                        <div class="pt-4 border-t border-black/5 text-center">
+                                            <span class="block text-[12px] font-semibold text-gray-500 mb-1">Total Deposited: <span id="tut3-b-cont" class="font-bold text-gray-800">$120,000</span></span>
+                                            <span class="block text-3xl font-display font-bold text-apple-red tracking-tight" id="tut3-b-final">$235,608</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `,
+                        onInit: () => tut3Calc()
+                    },
+                    {
+                        html: `
+                            <h3 class="text-2xl font-bold tracking-tight text-gray-900 mb-4">Lesson Complete</h3>
+                            <p class="text-[16px] text-gray-700 leading-relaxed mb-4">Starting 20 years earlier enabled Investor A to accumulate substantially more wealth while contributing less out-of-pocket capital. Time is the ultimate growth multiplier!</p>
+                        `
+                    }
+                ]
+            }
+        };
+
+        let currentLessonId = null;
+        let currentStepIndex = 0;
+        let completedLessons = new Set();
+
+        // LocalStorage Persistence Helpers
+        function loadSavedState() {
+            try {
+                const savedTutorials = localStorage.getItem('investlab_completed_tutorials');
+                if (savedTutorials) {
+                    const arr = JSON.parse(savedTutorials);
+                    arr.forEach(id => {
+                        completedLessons.add(id);
+                        const badge = document.getElementById(`badge-tut-${id}`);
+                        if (badge) {
+                            badge.innerText = "Completed";
+                            badge.className = "text-[12px] font-bold px-3 py-1 rounded-full bg-green-50 text-apple-green shadow-sm border border-green-200/50";
+                        }
+                    });
+                }
+
+                const savedSim = localStorage.getItem('investlab_sim_state');
+                if (savedSim) {
+                    const sim = JSON.parse(savedSim);
+                    if (sim.initial !== undefined) document.getElementById('sim-initial').value = sim.initial;
+                    if (sim.monthly !== undefined) document.getElementById('sim-monthly').value = sim.monthly;
+                    if (sim.years !== undefined) document.getElementById('sim-years').value = sim.years;
+                    if (sim.sp500 !== undefined) document.getElementById('alloc-sp500').value = sim.sp500;
+                    if (sim.us !== undefined) document.getElementById('alloc-us').value = sim.us;
+                    if (sim.intl !== undefined) document.getElementById('alloc-intl').value = sim.intl;
+                    if (sim.bond !== undefined) document.getElementById('alloc-bond').value = sim.bond;
+                    if (sim.savings !== undefined) document.getElementById('alloc-savings').value = sim.savings;
+                }
+            } catch (e) {
+                console.warn('LocalStorage unavailable or disabled:', e);
+            }
+        }
+
+        function saveSimulatorState() {
+            try {
+                const state = {
+                    initial: document.getElementById('sim-initial').value,
+                    monthly: document.getElementById('sim-monthly').value,
+                    years: document.getElementById('sim-years').value,
+                    sp500: document.getElementById('alloc-sp500').value,
+                    us: document.getElementById('alloc-us').value,
+                    intl: document.getElementById('alloc-intl').value,
+                    bond: document.getElementById('alloc-bond').value,
+                    savings: document.getElementById('alloc-savings').value
+                };
+                localStorage.setItem('investlab_sim_state', JSON.stringify(state));
+            } catch(e) {}
+        }
+
+        function saveTutorialState() {
+            try {
+                localStorage.setItem('investlab_completed_tutorials', JSON.stringify(Array.from(completedLessons)));
+            } catch(e) {}
+        }
+
+        function startTutorial(id) {
+            currentLessonId = id;
+            currentStepIndex = 0;
+            
+            document.getElementById('tutorial-hub').classList.add('hidden');
+            document.getElementById('tutorial-viewer').classList.remove('hidden');
+            document.getElementById('tut-active-title').innerText = tutorialData[id].title;
+            
+            renderTutorialStep();
+        }
+
+        function closeTutorial() {
+            document.getElementById('tutorial-hub').classList.remove('hidden');
+            document.getElementById('tutorial-viewer').classList.add('hidden');
+            currentLessonId = null;
+        }
+
+        function renderTutorialStep() {
+            const lesson = tutorialData[currentLessonId];
+            const step = lesson.steps[currentStepIndex];
+            
+            document.getElementById('tut-progress-text').innerText = `Step ${currentStepIndex + 1} of ${lesson.steps.length}`;
+            document.getElementById('tut-step-container').innerHTML = step.html;
+            
+            if (step.onInit) {
+                setTimeout(step.onInit, 0);
+            }
+
+            const prevBtn = document.getElementById('tut-prev-btn');
+            const nextBtn = document.getElementById('tut-next-btn');
+            
+            prevBtn.style.visibility = currentStepIndex === 0 ? 'hidden' : 'visible';
+            
+            if (currentStepIndex === lesson.steps.length - 1) {
+                nextBtn.innerText = "Complete Lesson";
+                nextBtn.className = "px-8 py-3 text-[15px] font-bold bg-apple-green text-white rounded-full hover:bg-green-600 transition-colors shadow-md apple-pill-btn";
+            } else {
+                nextBtn.innerText = "Next Step";
+                nextBtn.className = "px-8 py-3 text-[15px] font-bold bg-apple-blue text-white rounded-full hover:bg-blue-600 transition-colors shadow-md apple-pill-btn";
+            }
+        }
+
+        function nextTutorialStep() {
+            const lesson = tutorialData[currentLessonId];
+            if (currentStepIndex < lesson.steps.length - 1) {
+                currentStepIndex++;
+                renderTutorialStep();
+            } else {
+                completedLessons.add(currentLessonId);
+                saveTutorialState();
+                const badge = document.getElementById(`badge-tut-${currentLessonId}`);
+                if (badge) {
+                    badge.innerText = "Completed";
+                    badge.className = "text-[12px] font-bold px-3 py-1 rounded-full bg-green-50 text-apple-green shadow-sm border border-green-200/50";
+                }
+                closeTutorial();
+            }
+        }
+
+        function prevTutorialStep() {
+            if (currentStepIndex > 0) {
+                currentStepIndex--;
+                renderTutorialStep();
+            }
+        }
+
+        // Helper Calculators for Interactive Tutorial Widgets
+        function tut1Calc(years) {
+            const yrs = parseInt(years) || 10;
+            const valEl = document.getElementById('tut1-year-val');
+            if (valEl) valEl.innerText = yrs + " Years";
+            
+            const data = calculateMonthlyCompounding(0, 100, 8.0, yrs);
+            const final = data[data.length - 1];
+            
+            const contEl = document.getElementById('tut1-cont');
+            const balEl = document.getElementById('tut1-bal');
+            if (contEl) contEl.innerText = formatter.format(final.contributions);
+            if (balEl) balEl.innerText = formatter.format(final.balance);
+        }
+
+        function tut2Calc(stockPctVal) {
+            const stockPct = parseInt(stockPctVal) || 60;
+            const remaining = 100 - stockPct;
+            const bondPct = Math.round(remaining * 0.75);
+            const cashPct = remaining - bondPct;
+
+            const stockLbl = document.getElementById('tut2-stock-lbl');
+            const bondLbl = document.getElementById('tut2-bond-lbl');
+            if (stockLbl) stockLbl.innerText = `Stocks: ${stockPct}%`;
+            if (bondLbl) bondLbl.innerText = `Bonds: ${bondPct}% | Cash: ${cashPct}%`;
+
+            const ret = ((stockPct * 10.0) + (bondPct * 4.5) + (cashPct * 2.5)) / 100;
+            const retEl = document.getElementById('tut2-ret');
+            if (retEl) retEl.innerText = ret.toFixed(1) + "% / yr";
+
+            let risk = "Low Risk";
+            let color = "text-apple-green";
+            if (stockPct > 35) { risk = "Moderate Risk"; color = "text-amber-600"; }
+            if (stockPct > 70) { risk = "High Risk"; color = "text-apple-red"; }
+
+            const riskEl = document.getElementById('tut2-risk');
+            if (riskEl) {
+                riskEl.innerText = risk;
+                riskEl.className = `font-bold text-xl ${color} bg-white px-4 py-2 rounded-xl shadow-sm`;
+            }
+        }
+
+        function tut3Calc() {
+            const sliders = document.querySelectorAll('#tut-step-container input[type="range"]');
+            if (sliders.length >= 2) {
+                const ageA = parseInt(sliders[0].value) || 20;
+                const ageB = parseInt(sliders[1].value) || 40;
+
+                const lblA = document.getElementById('tut3-a-age-lbl');
+                const lblB = document.getElementById('tut3-b-age-lbl');
+                if (lblA) lblA.innerText = ageA;
+                if (lblB) lblB.innerText = ageB;
+
+                const yearsA = Math.max(1, 65 - ageA);
+                const yearsB = Math.max(1, 65 - ageB);
+
+                const resA = calculateMonthlyCompounding(0, 200, 8.0, yearsA);
+                const resB = calculateMonthlyCompounding(0, 400, 8.0, yearsB);
+
+                const finalA = resA[resA.length - 1];
+                const finalB = resB[resB.length - 1];
+
+                const contA = document.getElementById('tut3-a-cont');
+                const finalAEl = document.getElementById('tut3-a-final');
+                const contB = document.getElementById('tut3-b-cont');
+                const finalBEl = document.getElementById('tut3-b-final');
+
+                if (contA) contA.innerText = formatter.format(finalA.contributions);
+                if (finalAEl) finalAEl.innerText = formatter.format(finalA.balance);
+                if (contB) contB.innerText = formatter.format(finalB.contributions);
+                if (finalBEl) finalBEl.innerText = formatter.format(finalB.balance);
+            }
+        }
+
+        // Window Load Initialization
+        window.onload = () => {
+            loadSavedState();
+            showSection('simulator');
+            updateAllocations('init');
+            calcRiskProfile();
+        };
+    </script>
+</body>
+</html>
